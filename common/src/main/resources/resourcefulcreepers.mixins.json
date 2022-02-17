@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "net.creeperhost.resourcefulcreepers.mixin",
+  "mixins": [
+    "MixinCountPlacement",
+    "MixinTrapezoidHeight",
+    "MixinUniformHeight",
+    "MixinVerticalAnchor"
+  ],
+  "client": [
+    "MixinHeightRangePlacement",
+    "MixinModelLoader"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

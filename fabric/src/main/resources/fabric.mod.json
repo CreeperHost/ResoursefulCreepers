@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "resourcefulcreepers",
+  "version": "${version}",
+  "name": "Resourceful Creepers",
+  "description": "",
+  "authors": [
+    "CreeperHost"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+  "license": "Insert License Here",
+  "icon": "assets/resourcefulcreepers/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.creeperhost.resourcefulcreepers.fabric.ResourcefulCreepersFabric"
+    ]
+  },
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.18",
+    "architectury": ">=3.3.7"
+  },
+  "suggests": {
+    "flamingo": "*"
+  },
+  "mixins": [
+    "resourcefulcreepers.mixins.json"
+  ]
+}

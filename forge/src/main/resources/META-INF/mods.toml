@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[38,)"
+#issueTrackerURL = ""
+license = "Insert License Here"
+
+[[mods]]
+modId = "resourcefulcreepers"
+version = "${version}"
+displayName = "Resourceful Creepers"
+authors = "CreeperHost"
+description = '''
+Backup all the things!
+'''
+#logoFile = ""
+
+[[dependencies.resourcefulcreepers]]
+modId = "forge"
+mandatory = true
+versionRange = "[38,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.resourcefulcreepers]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.resourcefulcreepers]]
+modId = "architectury"
+mandatory = true
+versionRange = "[3.3.7,)"
+ordering = "AFTER"
+side = "BOTH"
