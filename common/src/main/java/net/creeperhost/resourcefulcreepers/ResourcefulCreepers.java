@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class ResourcefulCreepers
 {
@@ -56,6 +57,34 @@ public class ResourcefulCreepers
             Config.saveConfigToFile(Constants.CONFIG_FILE.toFile());
         }
         CreeperTypeList.init(Constants.CREEPER_TYPES_CONFIG.toFile());
+        List<String> names = new ArrayList<>();
+        List<CreeperType> dupes = new ArrayList<>();
+        if(CreeperTypeList.INSTANCE.creeperTypes != null && !CreeperTypeList.INSTANCE.creeperTypes.isEmpty())
+        {
+            for (CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes)
+            {
+                if(!names.contains(creeperType.getName()))
+                {
+                    names.add(creeperType.getName());
+                }
+                else
+                {
+                    dupes.add(creeperType);
+                }
+            }
+
+            if(!dupes.isEmpty())
+            {
+                List<CreeperType> copy = CreeperTypeList.INSTANCE.creeperTypes;
+                for (CreeperType dupe : dupes)
+                {
+                    LOGGER.error("Found duplicate entry for " + dupe.getName() + " removing");
+                    copy.remove(dupe);
+                }
+                CreeperTypeList.INSTANCE.creeperTypes = copy;
+                CreeperTypeList.updateFile();
+            }
+        }
         generateDefaultTypes();
         ModEntities.init();
         if(Platform.getEnvironment() == Env.CLIENT)

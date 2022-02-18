@@ -38,13 +38,6 @@ public class ResourcefulCreeperRender extends MobRenderer<EntityResourcefulCreep
        return new ResourceLocation(Constants.MOD_ID, "/textures/entities/" + entity.getCreeperType().getName());
     }
 
-//    @Nullable
-//    @Override
-//    protected RenderType getRenderType(EntityResourcefulCreeper livingEntity, boolean bl, boolean bl2, boolean bl3)
-//    {
-//        return RenderType.entityTranslucentCull(getTextureLocation(livingEntity));
-//    }
-
     @Override
     public void render(EntityResourcefulCreeper mob, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i)
     {
