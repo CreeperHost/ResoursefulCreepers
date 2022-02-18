@@ -1,0 +1,191 @@
+{
+  "creeperTypes": [
+    {
+      "name": "coal_ore",
+      "displayName": "Coal Ore",
+      "tier": 0,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -9145228,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 20,
+      "allowNaturalSpawns": true,
+      "armourValue": 3.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:coal_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "diamond_ore",
+      "displayName": "Diamond Ore",
+      "tier": 2,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -9145228,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 4,
+      "allowNaturalSpawns": true,
+      "armourValue": 3.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:diamond_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "emerald_ore",
+      "displayName": "Emerald Ore",
+      "tier": 2,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -12690633,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 100,
+      "allowNaturalSpawns": true,
+      "armourValue": 3.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:emerald_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "gold_ore",
+      "displayName": "Gold Ore",
+      "tier": 2,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -6118750,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 1,
+      "allowNaturalSpawns": true,
+      "armourValue": 3.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:gold_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "nether_gold_ore",
+      "displayName": "Nether Gold Ore",
+      "tier": 0,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -15329727,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 10,
+      "allowNaturalSpawns": true,
+      "armourValue": 3.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:nether_gold_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "deepslate_gold_ore",
+      "displayName": "Deepslate Gold Ore",
+      "tier": 2,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -8816263,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 1,
+      "allowNaturalSpawns": true,
+      "armourValue": 4.5,
+      "itemDrops": [
+        {
+          "name": "minecraft:deepslate_gold_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "iron_ore",
+      "displayName": "Iron Ore",
+      "tier": 1,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -9934744,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 10,
+      "allowNaturalSpawns": true,
+      "armourValue": 3.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:iron_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "lapis_ore",
+      "displayName": "Lapis Lazuli Ore",
+      "tier": 1,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -6118750,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 4,
+      "allowNaturalSpawns": true,
+      "armourValue": 3.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:lapis_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "redstone_ore",
+      "displayName": "Redstone Ore",
+      "tier": 2,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -7566189,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 8,
+      "allowNaturalSpawns": true,
+      "armourValue": 3.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:redstone_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "nether_quartz_ore",
+      "displayName": "Nether Quartz Ore",
+      "tier": 0,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -15000752,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 16,
+      "allowNaturalSpawns": true,
+      "armourValue": 3.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:nether_quartz_ore",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "ancient_debris",
+      "displayName": "Ancient Debris",
+      "tier": 3,
+      "spawnEggColour1": 894731,
+      "spawnEggColour2": -13880227,
+      "dropItemsOnDeath": true,
+      "spawnWeight": 0,
+      "allowNaturalSpawns": true,
+      "armourValue": 30.0,
+      "itemDrops": [
+        {
+          "name": "minecraft:ancient_debris",
+          "amount": 1
+        }
+      ]
+    }
+  ]
+}
