@@ -44,15 +44,29 @@ public class CreeperBuilder
         for (Block aDefault : defaults)
         {
             ResourceLocation name = Registry.BLOCK.getKey(aDefault);
+            ResourceLocation empty = new ResourceLocation("empty");
+            if(name == empty)
+            {
+                ResourcefulCreepers.LOGGER.error("Unable to find blocks resource location for " + name + " Skipping");
+                continue;
+            }
             OreGenData oreGenData = ORE_DATA.get(name);
             if(oreGenData == null)
             {
                 ResourcefulCreepers.LOGGER.error("Unable to find oreData for " + name + " Skipping");
                 continue;
             }
-
-            int tier = calculateTier(aDefault.defaultBlockState());
-            if(tier > MAX_TIER) tier = MAX_TIER;
+            int tier = -1;
+            if(calculateTier(aDefault.defaultBlockState()) >= 0)
+            {
+                tier = calculateTier(aDefault.defaultBlockState());
+                if(tier > MAX_TIER) tier = MAX_TIER;
+            }
+            else
+            {
+                ResourcefulCreepers.LOGGER.error("Unable to find calculate tier for " + name + " Skipping");
+                continue;
+            }
 
             CreeperType creeperType = new CreeperType(name.getPath(), aDefault.getName().getString(), tier, ResourcefulCreepers.DEFAULT_COLOUR,
                     ColorHelper.getRandomColour(new ItemStack(aDefault)), true, oreGenData.getWeight(), true,
