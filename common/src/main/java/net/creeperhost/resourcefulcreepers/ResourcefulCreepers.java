@@ -4,8 +4,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
-import io.sentry.SendCachedEnvelopeFireAndForgetIntegration;
-import io.sentry.SendFireAndForgetEnvelopeSender;
 import io.sentry.Sentry;
 import net.creeperhost.resourcefulcreepers.config.Config;
 import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
@@ -16,7 +14,6 @@ import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.fabricmc.api.EnvType;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.vehicle.Minecart;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,36 +31,20 @@ public class ResourcefulCreepers
 
     public static void init()
     {
-        Sentry.init(options -> {
+        Sentry.init(options ->
+        {
             options.setDsn("https://dcbda43f2f2a4ef38f702798205092dd@sentry.creeperhost.net/5");
-            // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-            // We recommend adjusting this value in production.
-            options.setTracesSampleRate(1.0);
+
+            options.setTracesSampleRate(Platform.isDevelopmentEnvironment() ? 1.0 : 0.025);
             options.setEnvironment(SharedConstants.getCurrentVersion().getName());
             options.setRelease(Constants.MOD_VERSION);
+            options.setTag("commit", BuildInfo.version);
             options.setTag("modloader", Minecraft.getInstance().getLaunchedVersion());
             options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) /1024)));
-            // When first trying Sentry it's good to see what the SDK is doing:
-            options.setDebug(false);
+            options.setDist(System.getProperty("os.arch"));
             options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
-            options.setCacheDirPath("./local/creeperhost/sentry");
-            options.addIntegration(new SendCachedEnvelopeFireAndForgetIntegration(new SendFireAndForgetEnvelopeSender(options::getCacheDirPath)));
-            options.setEnableUncaughtExceptionHandler(true);
+            options.setDebug(Platform.isDevelopmentEnvironment());
         });
-
-        Thread.setDefaultUncaughtExceptionHandler((thread, exception) ->
-        {
-//            if(exception.getMessage().contains("net.creeperhost"))
-//            {
-                Sentry.captureException(exception);
-//            }
-        });
-
-//        try {
-//          throw new Exception("This is a test.");
-//        } catch (Exception e) {
-//            Sentry.captureException(e);
-//        }
 
         try
         {
