@@ -34,6 +34,27 @@ dependencies {
 //    shadowCommon "blue.endless:jankson:1.2.1"
 }
 
+def targetPackage = 'net/creeperhost/resourcefulcreeperhost'
+def targetPackageJava = 'net.creeperhost.resourcefulcreeperhost'
+
+compileJava {
+    doFirst {
+        ant.mkdir(dir: "${projectDir}/src/main/java/${targetPackage}")
+        def newBuildInfo = new File("${projectDir}/src/main/java/${targetPackage}/BuildInfo.java")
+        def templateBuildInfo = new File("${projectDir}/templates/TemplateBuildInfo.java")
+
+        newBuildInfo.withWriter { def writer ->
+            templateBuildInfo.eachLine { def line ->
+                def newLine = line.replace("__PACKAGE", targetPackageJava)
+                        .replace("__VERSION", versionDetails())
+                        .replace("__BUILD_TIMESTAMP", buildTimeStamp)
+                writer.write(newLine + "\n");
+            }
+        }
+    }
+}
+
+
 processResources {
     inputs.property "version", project.version
 

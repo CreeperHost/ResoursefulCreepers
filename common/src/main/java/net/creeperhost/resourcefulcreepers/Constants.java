@@ -9,6 +9,7 @@ public class Constants
     public static final String MOD_ID = "resourcefulcreepers";
     //TODO make gradle set this
     public static final String MOD_VERSION = "dev";
+    public static final String GIT_HASH  = "";
 
     //Paths
     public static Path CONFIG_FOLDER = Platform.getConfigFolder().resolve(MOD_ID);

@@ -4,6 +4,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
+import io.sentry.SendCachedEnvelopeFireAndForgetIntegration;
+import io.sentry.SendFireAndForgetEnvelopeSender;
 import io.sentry.Sentry;
 import net.creeperhost.resourcefulcreepers.config.Config;
 import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
@@ -44,6 +46,8 @@ public class ResourcefulCreepers
             // When first trying Sentry it's good to see what the SDK is doing:
             options.setDebug(false);
             options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
+            options.setCacheDirPath("./local/creeperhost/sentry");
+            options.addIntegration(new SendCachedEnvelopeFireAndForgetIntegration(new SendFireAndForgetEnvelopeSender(options::getCacheDirPath)));
             options.setEnableUncaughtExceptionHandler(true);
         });
 
