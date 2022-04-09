@@ -28,6 +28,7 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    implementation 'io.sentry:sentry:5.7.2'
 
 //    implementation "blue.endless:jankson:1.2.1"
 //    shadowCommon "blue.endless:jankson:1.2.1"

@@ -4,37 +4,25 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
+import io.sentry.Sentry;
 import net.creeperhost.resourcefulcreepers.config.Config;
-import net.creeperhost.resourcefulcreepers.data.OreGenData;
-import net.creeperhost.resourcefulcreepers.mixin.*;
 import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.data.CreeperTypeList;
 import net.creeperhost.resourcefulcreepers.data.ItemDrop;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
-import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.levelgen.VerticalAnchor;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
-import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
-import net.minecraft.world.level.levelgen.heightproviders.TrapezoidHeight;
-import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
-import net.minecraft.world.level.levelgen.placement.CountPlacement;
-import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
+import net.fabricmc.api.EnvType;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.vehicle.Minecart;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class ResourcefulCreepers
 {
@@ -44,75 +32,111 @@ public class ResourcefulCreepers
 
     public static void init()
     {
-        if(!Constants.CONFIG_FOLDER.toFile().exists())
-        {
-            LOGGER.info("Creating config folder at " + Constants.CONFIG_FOLDER);
-            Constants.CONFIG_FOLDER.toFile().mkdirs();
-        }
-        Config.init(Constants.CONFIG_FILE.toFile());
-        if(!Config.INSTANCE.generateDefaultTypes && !Constants.CREEPER_TYPES_CONFIG.toFile().exists())
-        {
-            LOGGER.info("creeper_types.json does not exist, Creating new file using the ores tag");
-            Config.INSTANCE.autoGenerateCreeperTypesFromOreTags = true;
-            Config.saveConfigToFile(Constants.CONFIG_FILE.toFile());
-        }
-        CreeperTypeList.init(Constants.CREEPER_TYPES_CONFIG.toFile());
-        List<String> names = new ArrayList<>();
-        List<CreeperType> dupes = new ArrayList<>();
-        if(CreeperTypeList.INSTANCE.creeperTypes != null && !CreeperTypeList.INSTANCE.creeperTypes.isEmpty())
-        {
-            for (CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes)
-            {
-                if(!names.contains(creeperType.getName()))
-                {
-                    names.add(creeperType.getName());
-                }
-                else
-                {
-                    dupes.add(creeperType);
-                }
-            }
+        Sentry.init(options -> {
+            options.setDsn("https://dcbda43f2f2a4ef38f702798205092dd@sentry.creeperhost.net/5");
+            // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+            // We recommend adjusting this value in production.
+            options.setTracesSampleRate(1.0);
+            options.setEnvironment(SharedConstants.getCurrentVersion().getName());
+            options.setRelease(Constants.MOD_VERSION);
+            options.setTag("modloader", Minecraft.getInstance().getLaunchedVersion());
+            options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) /1024)));
+            // When first trying Sentry it's good to see what the SDK is doing:
+            options.setDebug(false);
+            options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
+            options.setEnableUncaughtExceptionHandler(true);
+        });
 
-            if(!dupes.isEmpty())
-            {
-                List<CreeperType> copy = CreeperTypeList.INSTANCE.creeperTypes;
-                for (CreeperType dupe : dupes)
-                {
-                    LOGGER.error("Found duplicate entry for " + dupe.getName() + " removing");
-                    copy.remove(dupe);
-                }
-                CreeperTypeList.INSTANCE.creeperTypes = copy;
-                CreeperTypeList.updateFile();
-            }
-        }
-        generateDefaultTypes();
-        ModEntities.init();
-        if(Platform.getEnvironment() == Env.CLIENT)
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) ->
         {
-            ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world ->
-            {
-                if (Config.INSTANCE.autoGenerateCreeperTypesFromOreTags)
-                {
-                    int amount = CreeperBuilder.generateFromOreTags();
-                    Config.INSTANCE.autoGenerateCreeperTypesFromOreTags = false;
-                    Config.saveConfigToFile(Constants.CONFIG_FILE.toFile());
-                    LOGGER.info("Finished creating new CreeperTypes, " + amount + " types have been created, A restart is needed for these changes to take effect");
-                }
+//            if(exception.getMessage().contains("net.creeperhost"))
+//            {
+                Sentry.captureException(exception);
+//            }
+        });
 
-                if (CreeperTypeList.INSTANCE.creeperTypes != null && !CreeperTypeList.INSTANCE.creeperTypes.isEmpty())
+//        try {
+//          throw new Exception("This is a test.");
+//        } catch (Exception e) {
+//            Sentry.captureException(e);
+//        }
+
+        try
+        {
+
+            if (!Constants.CONFIG_FOLDER.toFile().exists())
+            {
+                LOGGER.info("Creating config folder at " + Constants.CONFIG_FOLDER);
+                Constants.CONFIG_FOLDER.toFile().mkdirs();
+            }
+            Config.init(Constants.CONFIG_FILE.toFile());
+            if (!Config.INSTANCE.generateDefaultTypes && !Constants.CREEPER_TYPES_CONFIG.toFile().exists())
+            {
+                LOGGER.info("creeper_types.json does not exist, Creating new file using the ores tag");
+                Config.INSTANCE.autoGenerateCreeperTypesFromOreTags = true;
+                Config.saveConfigToFile(Constants.CONFIG_FILE.toFile());
+            }
+            CreeperTypeList.init(Constants.CREEPER_TYPES_CONFIG.toFile());
+            List<String> names = new ArrayList<>();
+            List<CreeperType> dupes = new ArrayList<>();
+            if (CreeperTypeList.INSTANCE.creeperTypes != null && !CreeperTypeList.INSTANCE.creeperTypes.isEmpty())
+            {
+                for (CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes)
                 {
-                    for (CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes)
+                    if (!names.contains(creeperType.getName()))
                     {
-                        try
-                        {
-                            CompletableFuture.runAsync(() -> TextureBuilder.createCreeperTexture(creeperType), TEXTURE_CREATION_EXECUTOR);
-                        } catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
+                        names.add(creeperType.getName());
+                    }
+                    else
+                    {
+                        dupes.add(creeperType);
                     }
                 }
-            });
+
+                if (!dupes.isEmpty())
+                {
+                    List<CreeperType> copy = CreeperTypeList.INSTANCE.creeperTypes;
+                    for (CreeperType dupe : dupes)
+                    {
+                        LOGGER.error("Found duplicate entry for " + dupe.getName() + " removing");
+                        copy.remove(dupe);
+                    }
+                    CreeperTypeList.INSTANCE.creeperTypes = copy;
+                    CreeperTypeList.updateFile();
+                }
+            }
+            generateDefaultTypes();
+            ModEntities.init();
+            if (Platform.getEnvironment() == Env.CLIENT)
+            {
+                ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world ->
+                {
+                    if (Config.INSTANCE.autoGenerateCreeperTypesFromOreTags)
+                    {
+                        int amount = CreeperBuilder.generateFromOreTags();
+                        Config.INSTANCE.autoGenerateCreeperTypesFromOreTags = false;
+                        Config.saveConfigToFile(Constants.CONFIG_FILE.toFile());
+                        LOGGER.info("Finished creating new CreeperTypes, " + amount + " types have been created, A restart is needed for these changes to take effect");
+                    }
+
+                    if (CreeperTypeList.INSTANCE.creeperTypes != null && !CreeperTypeList.INSTANCE.creeperTypes.isEmpty())
+                    {
+                        for (CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes)
+                        {
+                            try
+                            {
+                                CompletableFuture.runAsync(() -> TextureBuilder.createCreeperTexture(creeperType), TEXTURE_CREATION_EXECUTOR);
+                            } catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (Exception e)
+        {
+            Sentry.captureException(e);
         }
     }
 
