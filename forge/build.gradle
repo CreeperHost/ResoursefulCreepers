@@ -1,5 +1,6 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.palantir.git-version" version "0.12.2"
 }
 
 architectury {
@@ -42,6 +43,8 @@ compileJava {
         ant.mkdir(dir: "${projectDir}/src/main/java/${targetPackage}")
         def newBuildInfo = new File("${projectDir}/src/main/java/${targetPackage}/BuildInfo.java")
         def templateBuildInfo = new File("${projectDir}/templates/TemplateBuildInfo.java")
+        def buildTimeStamp = new Date().toString()
+
 
         newBuildInfo.withWriter { def writer ->
             templateBuildInfo.eachLine { def line ->
