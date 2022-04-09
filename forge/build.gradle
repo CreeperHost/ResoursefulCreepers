@@ -1,6 +1,5 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
-    id "com.palantir.git-version" version "0.12.2"
 }
 
 architectury {
@@ -34,29 +33,6 @@ dependencies {
 //    implementation "blue.endless:jankson:1.2.1"
 //    shadowCommon "blue.endless:jankson:1.2.1"
 }
-
-def targetPackage = 'net/creeperhost/resourcefulcreeperhost'
-def targetPackageJava = 'net.creeperhost.resourcefulcreeperhost'
-
-compileJava {
-    doFirst {
-        ant.mkdir(dir: "${projectDir}/src/main/java/${targetPackage}")
-        def newBuildInfo = new File("${projectDir}/src/main/java/${targetPackage}/BuildInfo.java")
-        def templateBuildInfo = new File("${projectDir}/templates/TemplateBuildInfo.java")
-        def buildTimeStamp = new Date().toString()
-
-
-        newBuildInfo.withWriter { def writer ->
-            templateBuildInfo.eachLine { def line ->
-                def newLine = line.replace("__PACKAGE", targetPackageJava)
-                        .replace("__VERSION", versionDetails())
-                        .replace("__BUILD_TIMESTAMP", buildTimeStamp)
-                writer.write(newLine + "\n");
-            }
-        }
-    }
-}
-
 
 processResources {
     inputs.property "version", project.version
