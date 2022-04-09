@@ -46,7 +46,7 @@ public class ResourcefulCreepersExpectPlatformImpl
 
     public static void registerSpawns(EntityType<EntityResourcefulCreeper> entityType, int weight)
     {
-        SpawnPlacements.register(entityType, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ResourcefulCreepersExpectPlatformImpl::genericGroundSpawn);
+        SpawnPlacements.register(entityType, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, ResourcefulCreepersExpectPlatformImpl::genericGroundSpawn);
     }
 
     public static boolean genericGroundSpawn(EntityType<? extends Entity> entityType, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, Random random)
