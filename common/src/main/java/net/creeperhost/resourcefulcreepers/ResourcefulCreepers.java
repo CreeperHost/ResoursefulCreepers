@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
-import io.sentry.Sentry;
 import net.creeperhost.resourcefulcreepers.config.Config;
 import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
@@ -28,23 +27,24 @@ public class ResourcefulCreepers
     public static Logger LOGGER = LogManager.getLogger();
     public static int DEFAULT_COLOUR = 894731;
     private static final ExecutorService TEXTURE_CREATION_EXECUTOR = Executors.newFixedThreadPool(5, new ThreadFactoryBuilder().setNameFormat("resourcefulcreepers-texture_creation-%d").build());
+    public static final ExecutorService REGISTER_THREAD_BECAUSE_FORGE_IS_DUMB = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("resourcefulcreepers-mob_creation-%d").build());
 
     public static void init()
     {
-        Sentry.init(options ->
-        {
-            options.setDsn("https://dcbda43f2f2a4ef38f702798205092dd@sentry.creeperhost.net/5");
-
-            options.setTracesSampleRate(Platform.isDevelopmentEnvironment() ? 1.0 : 0.025);
-            options.setEnvironment(SharedConstants.getCurrentVersion().getName());
-            options.setRelease(Constants.MOD_VERSION);
-            options.setTag("commit", BuildInfo.version);
-            options.setTag("modloader", Minecraft.getInstance().getLaunchedVersion());
-            options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) /1024)));
-            options.setDist(System.getProperty("os.arch"));
-            options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
-            options.setDebug(Platform.isDevelopmentEnvironment());
-        });
+//        Sentry.init(options ->
+//        {
+//            options.setDsn("https://dcbda43f2f2a4ef38f702798205092dd@sentry.creeperhost.net/5");
+//
+//            options.setTracesSampleRate(Platform.isDevelopmentEnvironment() ? 1.0 : 0.025);
+//            options.setEnvironment(SharedConstants.getCurrentVersion().getName());
+//            options.setRelease(Constants.MOD_VERSION);
+//            options.setTag("commit", BuildInfo.version);
+//            options.setTag("modloader", Minecraft.getInstance().getLaunchedVersion());
+//            options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) /1024)));
+//            options.setDist(System.getProperty("os.arch"));
+//            options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
+//            options.setDebug(Platform.isDevelopmentEnvironment());
+//        });
 
         try
         {
@@ -91,7 +91,7 @@ public class ResourcefulCreepers
                 }
             }
             generateDefaultTypes();
-            ModEntities.init();
+            if(Platform.isFabric()) ModEntities.init();
             if (Platform.getEnvironment() == Env.CLIENT)
             {
                 ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world ->
@@ -110,6 +110,7 @@ public class ResourcefulCreepers
                         {
                             try
                             {
+                                System.out.println("Running texture builder for " + creeperType.getName());
                                 CompletableFuture.runAsync(() -> TextureBuilder.createCreeperTexture(creeperType), TEXTURE_CREATION_EXECUTOR);
                             } catch (Exception e)
                             {
@@ -121,7 +122,7 @@ public class ResourcefulCreepers
             }
         } catch (Exception e)
         {
-            Sentry.captureException(e);
+//            Sentry.captureException(e);
         }
     }
 

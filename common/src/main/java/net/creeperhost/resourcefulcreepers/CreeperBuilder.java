@@ -16,6 +16,7 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import net.minecraft.world.level.levelgen.heightproviders.TrapezoidHeight;
@@ -85,13 +86,13 @@ public class CreeperBuilder
         {
             configuredFeature.getFeatures().forEach(configuredFeature1 ->
             {
-                if(configuredFeature1.config instanceof OreConfiguration oreConfiguration)
+                if(configuredFeature1.config() instanceof OreConfiguration oreConfiguration)
                 {
                     AtomicInteger minWeight = new AtomicInteger();
                     AtomicInteger minY = new AtomicInteger();
                     AtomicInteger maxY = new AtomicInteger();
 
-                    configuredFeature.getPlacement().forEach(placementModifier ->
+                    configuredFeature.placement().forEach(placementModifier ->
                     {
                         if(placementModifier instanceof CountPlacement countPlacement)
                         {
@@ -106,20 +107,22 @@ public class CreeperBuilder
                                 VerticalAnchor verticalAnchor = ((MixinUniformHeight) uniformHeight).getminInclusive();
                                 VerticalAnchor verticalAnchor2 = ((MixinUniformHeight) uniformHeight).getmaxInclusive();
 
-                                int min = ((MixinVerticalAnchor)verticalAnchor).getvalue();
-                                int max = ((MixinVerticalAnchor)verticalAnchor2).getvalue();
-                                minY.set(min);
-                                maxY.set(max);
+                                //TODO Requires more brain power to track down
+//                                int min = ((MixinVerticalAnchor)verticalAnchor).getvalue();
+//                                int max = ((MixinVerticalAnchor)verticalAnchor2).getvalue();
+                                minY.set(0);
+                                maxY.set(0);
                             }
                             if(heightProvider instanceof TrapezoidHeight trapezoidHeight)
                             {
                                 VerticalAnchor verticalAnchor = ((MixinTrapezoidHeight) trapezoidHeight).getminInclusive();
                                 VerticalAnchor verticalAnchor2 = ((MixinTrapezoidHeight) trapezoidHeight).getmaxInclusive();
 
-                                int min = ((MixinVerticalAnchor)verticalAnchor).getvalue();
-                                int max = ((MixinVerticalAnchor)verticalAnchor2).getvalue();
-                                minY.set(min);
-                                maxY.set(max);
+                                //TODO Requires more brain power to track down
+//                                int min = ((MixinVerticalAnchor)verticalAnchor).getvalue();
+//                                int max = ((MixinVerticalAnchor)verticalAnchor2).getvalue();
+                                minY.set(0);
+                                maxY.set(0);
                             }
                         }
                     });

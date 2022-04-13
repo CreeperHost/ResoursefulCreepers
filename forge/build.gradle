@@ -8,6 +8,15 @@ architectury {
 }
 
 loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    forge {
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+    }
+}
+
+loom {
     forge {
         mixinConfig "resourcefulcreepers.mixins.json"
     }
@@ -22,14 +31,14 @@ configurations {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    forge("net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}")
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-    implementation 'io.sentry:sentry:5.7.2'
-    shadowCommon "io.sentry:sentry:5.7.2"
+//    implementation 'io.sentry:sentry:5.7.2'
+//    shadowCommon "io.sentry:sentry:5.7.2"
 }
 
 processResources {
@@ -42,15 +51,14 @@ processResources {
 
 shadowJar {
     exclude "fabric.mod.json"
-
-
+    exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    relocate 'io.sentry', 'net.creeperhost.resourcefulcreepers.io.sentry'
-//    relocate 'com.google', 'net.creeperhost.resourcefulcreepers.com.google'
-    dependencies {
-        exclude(dependency("com.google.gson::"))
-    }
+//    dependencies {
+//        exclude(dependency("com.google.gson::"))
+//    }
+//    relocate 'io.sentry', 'net.creeperhost.resourcefulcreepers.io.sentry'
+
     classifier "dev-shadow"
 }
 

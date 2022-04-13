@@ -2,8 +2,6 @@ package net.creeperhost.resourcefulcreepers.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.sentry.Sentry;
-import net.minecraft.client.Minecraft;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -43,8 +41,6 @@ public class Config
 
     public static void loadFromFile(File file)
     {
-        boolean crash = Minecraft.getInstance().level.isClientSide;
-        System.out.println(crash);
         Gson gson = new Gson();
         try
         {

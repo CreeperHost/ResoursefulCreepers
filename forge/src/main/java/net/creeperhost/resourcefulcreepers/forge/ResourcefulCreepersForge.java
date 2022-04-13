@@ -4,11 +4,14 @@ import dev.architectury.platform.forge.EventBuses;
 import net.creeperhost.resourcefulcreepers.Constants;
 import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -29,5 +32,4 @@ public class ResourcefulCreepersForge
         ResourcefulCreepers.init();
         MinecraftForge.EVENT_BUS.register(this);
     }
-
 }

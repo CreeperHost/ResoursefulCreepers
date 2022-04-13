@@ -1,39 +1,30 @@
 package net.creeperhost.resourcefulcreepers.forge;
 
-import net.creeperhost.resourcefulcreepers.ResourcefulCreepersExpectPlatform;
 import net.creeperhost.resourcefulcreepers.entites.EntityResourcefulCreeper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.effect.MobEffectUtil;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.TierSortingRegistry;
 import net.minecraftforge.fml.loading.FMLPaths;
 
-import javax.annotation.Nullable;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -56,7 +47,15 @@ public class ResourcefulCreepersExpectPlatformImpl
 
     public static List<Block> getDefaults()
     {
-        return Tags.Blocks.ORES.getValues();
+        TagKey<Block> tag = Tags.Blocks.ORES;
+        Iterable<Holder<Block>> i = Registry.BLOCK.getTagOrEmpty(tag);
+        List<Block> blockList = new ArrayList<>();
+        for (Holder<Block> blockHolder : i)
+        {
+            blockList.add(blockHolder.value());
+        }
+        System.out.println(blockList);
+        return blockList;
     }
 
     public static int getColour(ItemStack itemStack)
@@ -76,5 +75,10 @@ public class ResourcefulCreepersExpectPlatformImpl
     public static boolean isCorrectTierForDrops(Tier tier, BlockState blockState)
     {
         return TierSortingRegistry.isCorrectTierForDrops(tier, blockState);
+    }
+
+    public static void unfreezeRegistry()
+    {
+        Registry.ENTITY_TYPE.unfreeze();
     }
 }
