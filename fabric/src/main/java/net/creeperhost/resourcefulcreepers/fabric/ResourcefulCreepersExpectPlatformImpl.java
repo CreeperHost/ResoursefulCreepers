@@ -84,8 +84,4 @@ public class ResourcefulCreepersExpectPlatformImpl
     {
         return false;
     }
-
-    public static void unfreezeRegistry()
-    {
-    }
 }

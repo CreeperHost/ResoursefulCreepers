@@ -49,7 +49,4 @@ public class ResourcefulCreepersExpectPlatform
     {
         return false;
     }
-
-    @ExpectPlatform
-    public static void unfreezeRegistry(){}
 }

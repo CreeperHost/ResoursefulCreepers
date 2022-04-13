@@ -76,9 +76,4 @@ public class ResourcefulCreepersExpectPlatformImpl
     {
         return TierSortingRegistry.isCorrectTierForDrops(tier, blockState);
     }
-
-    public static void unfreezeRegistry()
-    {
-        Registry.ENTITY_TYPE.unfreeze();
-    }
 }
