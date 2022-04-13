@@ -37,8 +37,8 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-//    implementation 'io.sentry:sentry:5.7.2'
-//    shadowCommon "io.sentry:sentry:5.7.2"
+    implementation 'io.sentry:sentry:5.7.2'
+    shadowCommon "io.sentry:sentry:5.7.2"
 }
 
 processResources {
@@ -57,8 +57,7 @@ shadowJar {
 //    dependencies {
 //        exclude(dependency("com.google.gson::"))
 //    }
-//    relocate 'io.sentry', 'net.creeperhost.resourcefulcreepers.io.sentry'
-
+    relocate 'io.sentry', 'net.creeperhost.resourcefulcreepers.io.sentry'
     classifier "dev-shadow"
 }
 

@@ -6,6 +6,7 @@ import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.utils.Env;
+import io.sentry.Sentry;
 import net.creeperhost.resourcefulcreepers.Constants;
 import net.creeperhost.resourcefulcreepers.ResourcefulCreepersExpectPlatform;
 import net.creeperhost.resourcefulcreepers.client.ResourcefulCreeperRender;
@@ -81,10 +82,12 @@ public class ModEntities
                     SPAWN_EGG_ITEMS.register(creeperType.getName(), () -> spawnEggItem);
                 } catch (Exception e)
                 {
+                    Sentry.captureException(e);
                     e.printStackTrace();
                 }
             } catch (Exception e)
             {
+                Sentry.captureException(e);
                 e.printStackTrace();
             }
         }

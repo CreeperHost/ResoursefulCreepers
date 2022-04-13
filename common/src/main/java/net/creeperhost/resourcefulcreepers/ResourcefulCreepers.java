@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
+import io.sentry.Sentry;
 import net.creeperhost.resourcefulcreepers.config.Config;
 import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
@@ -31,20 +32,20 @@ public class ResourcefulCreepers
 
     public static void init()
     {
-//        Sentry.init(options ->
-//        {
-//            options.setDsn("https://dcbda43f2f2a4ef38f702798205092dd@sentry.creeperhost.net/5");
-//
-//            options.setTracesSampleRate(Platform.isDevelopmentEnvironment() ? 1.0 : 0.025);
-//            options.setEnvironment(SharedConstants.getCurrentVersion().getName());
-//            options.setRelease(Constants.MOD_VERSION);
-//            options.setTag("commit", BuildInfo.version);
-//            options.setTag("modloader", Minecraft.getInstance().getLaunchedVersion());
-//            options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) /1024)));
-//            options.setDist(System.getProperty("os.arch"));
-//            options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
-//            options.setDebug(Platform.isDevelopmentEnvironment());
-//        });
+        Sentry.init(options ->
+        {
+            options.setDsn("https://dcbda43f2f2a4ef38f702798205092dd@sentry.creeperhost.net/5");
+
+            options.setTracesSampleRate(Platform.isDevelopmentEnvironment() ? 1.0 : 0.025);
+            options.setEnvironment(SharedConstants.getCurrentVersion().getName());
+            options.setRelease(Constants.MOD_VERSION);
+            options.setTag("commit", BuildInfo.version);
+            options.setTag("modloader", Minecraft.getInstance().getLaunchedVersion());
+            options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) /1024)));
+            options.setDist(System.getProperty("os.arch"));
+            options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
+            options.setDebug(Platform.isDevelopmentEnvironment());
+        });
 
         try
         {
@@ -122,7 +123,7 @@ public class ResourcefulCreepers
             }
         } catch (Exception e)
         {
-//            Sentry.captureException(e);
+            Sentry.captureException(e);
         }
     }
 

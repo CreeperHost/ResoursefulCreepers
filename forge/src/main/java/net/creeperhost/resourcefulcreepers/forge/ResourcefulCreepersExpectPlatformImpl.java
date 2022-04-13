@@ -15,6 +15,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,7 +43,10 @@ public class ResourcefulCreepersExpectPlatformImpl
 
     public static boolean genericGroundSpawn(EntityType<? extends Entity> entityType, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, Random random)
     {
-        return worldIn.getDifficulty() != Difficulty.PEACEFUL && Monster.isDarkEnoughToSpawn((ServerLevelAccessor) worldIn, pos, random) && worldIn.getBlockState(pos).isValidSpawn(worldIn, pos, entityType);
+        int light = worldIn.getBrightness(LightLayer.BLOCK, pos);
+        System.out.println(light);
+        return light == 0;
+//        return worldIn.getDifficulty() != Difficulty.PEACEFUL && Monster.isDarkEnoughToSpawn((ServerLevelAccessor) worldIn, pos, random) && worldIn.getBlockState(pos).isValidSpawn(worldIn, pos, entityType);
     }
 
     public static List<Block> getDefaults()
