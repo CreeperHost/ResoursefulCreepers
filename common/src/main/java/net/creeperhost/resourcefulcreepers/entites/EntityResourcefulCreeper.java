@@ -67,12 +67,10 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         super(entityType, level);
         this.entityType = entityType;
         String[] split = entityType.getDescriptionId().split("\\.");
-        System.out.println(this.blockPosition());
         if(split.length > 2)
         {
             String name = split[2];
             CreeperType creeperType = ResourcefulCreepers.getTypeFromName(name);
-            System.out.println("NAME: " + name);
             if(creeperType != null)
             {
                 this.creeperType = creeperType;
