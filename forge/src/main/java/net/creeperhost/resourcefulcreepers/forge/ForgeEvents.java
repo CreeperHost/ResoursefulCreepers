@@ -28,7 +28,7 @@ public class ForgeEvents
         {
             try
             {
-                event.getSpawns().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(entityResourcefulCreeperEntityType, integer, 1, 1));
+                event.getSpawns().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(entityResourcefulCreeperEntityType, integer, 1, 1));
             } catch (Exception e)
             {
                 Sentry.captureException(e);

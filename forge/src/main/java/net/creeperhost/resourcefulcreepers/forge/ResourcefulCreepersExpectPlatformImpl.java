@@ -43,10 +43,15 @@ public class ResourcefulCreepersExpectPlatformImpl
 
     public static boolean genericGroundSpawn(EntityType<? extends Entity> entityType, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, Random random)
     {
-        int light = worldIn.getBrightness(LightLayer.BLOCK, pos);
-        System.out.println(light);
-        return light == 0;
-//        return worldIn.getDifficulty() != Difficulty.PEACEFUL && Monster.isDarkEnoughToSpawn((ServerLevelAccessor) worldIn, pos, random) && worldIn.getBlockState(pos).isValidSpawn(worldIn, pos, entityType);
+        if (worldIn.getBrightness(LightLayer.SKY, pos) > random.nextInt(32))
+        {
+            return false;
+        }
+        else if (worldIn.getBrightness(LightLayer.BLOCK, pos) > 0)
+        {
+            return false;
+        }
+        return true;
     }
 
     public static List<Block> getDefaults()
