@@ -43,14 +43,10 @@ public class ResourcefulCreepersExpectPlatformImpl
 
     public static boolean genericGroundSpawn(EntityType<? extends Entity> entityType, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, Random random)
     {
-        if (worldIn.getBrightness(LightLayer.SKY, pos) > random.nextInt(32))
-        {
-            return false;
-        }
-        else if (worldIn.getBrightness(LightLayer.BLOCK, pos) > 0)
-        {
-            return false;
-        }
+        if(worldIn.getDifficulty() == Difficulty.PEACEFUL) return false;
+        if (worldIn.getBrightness(LightLayer.SKY, pos) > random.nextInt(32)) return false;
+        if (worldIn.getBrightness(LightLayer.BLOCK, pos) > 0) return false;
+
         return true;
     }
 
