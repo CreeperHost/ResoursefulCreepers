@@ -49,6 +49,8 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     private static final EntityDataAccessor<Integer> DATA_SWELL_DIR;
     private static final EntityDataAccessor<Boolean> DATA_IS_POWERED;
     private static final EntityDataAccessor<Boolean> DATA_IS_IGNITED;
+    private static final EntityDataAccessor<Boolean> DATA_IS_TAMED;
+
     private int oldSwell;
     private int swell;
     private int maxSwell = 30;
@@ -60,6 +62,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         DATA_SWELL_DIR = SynchedEntityData.defineId(EntityResourcefulCreeper.class, EntityDataSerializers.INT);
         DATA_IS_POWERED = SynchedEntityData.defineId(EntityResourcefulCreeper.class, EntityDataSerializers.BOOLEAN);
         DATA_IS_IGNITED = SynchedEntityData.defineId(EntityResourcefulCreeper.class, EntityDataSerializers.BOOLEAN);
+        DATA_IS_TAMED = SynchedEntityData.defineId(EntityResourcefulCreeper.class, EntityDataSerializers.BOOLEAN);
     }
 
     public EntityResourcefulCreeper(EntityType<? extends Animal> entityType, Level level)
@@ -228,6 +231,15 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         return Mth.lerp(f, (float)this.oldSwell, (float)this.swell) / (float)(this.maxSwell - 2);
     }
 
+    public boolean isTamed()
+    {
+        return this.entityData.get(DATA_IS_TAMED);
+    }
+    public void setTamed()
+    {
+        this.entityData.set(DATA_IS_TAMED, true);
+    }
+
     @Override
     public void dropCustomDeathLoot(DamageSource damageSource, int i, boolean bl)
     {
@@ -275,8 +287,17 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             {
                 int random = serverLevel.random.nextInt(possible.size());
                 baby = (AgeableMob) possible.get(random).create(serverLevel);
+                if(baby instanceof EntityResourcefulCreeper c)
+                {
+                    c.setTamed();
+                }
             }
         }
+        if(ageableMob instanceof EntityResourcefulCreeper entityResourcefulCreeper)
+        {
+            entityResourcefulCreeper.setTamed();
+        }
+        this.setTamed();
         return baby;
     }
 
@@ -295,7 +316,6 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         return list;
     }
 
-    //TODO
     @Override
     public float getStandingEyeHeight(Pose pose, EntityDimensions entityDimensions)
     {
@@ -309,6 +329,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         this.entityData.define(DATA_SWELL_DIR, -1);
         this.entityData.define(DATA_IS_POWERED, false);
         this.entityData.define(DATA_IS_IGNITED, false);
+        this.entityData.define(DATA_IS_TAMED, false);
     }
 
     @Override
@@ -322,6 +343,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         compoundTag.putShort("Fuse", (short)this.maxSwell);
         compoundTag.putByte("ExplosionRadius", (byte)this.explosionRadius);
         compoundTag.putBoolean("ignited", this.isIgnited());
+        compoundTag.putBoolean("tamed", this.isTamed());
     }
 
     @Override
@@ -342,5 +364,28 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         {
             this.ignite();
         }
+        if (compoundTag.getBoolean("tamed"))
+        {
+            this.setTamed();
+        }
+    }
+
+    @Override
+    protected boolean shouldDespawnInPeaceful()
+    {
+        //Only allow entity to despawn when the game is switched to peaceful if creeper is not tamed
+        if(isTamed()) return false;
+        if(isBaby()) return false;
+        return true;
+    }
+
+    @Override
+    public void checkDespawn()
+    {
+        //Don't allow the entity to be depawned if its tamed
+        if(this.isTamed()) return;
+        if(this.isBaby()) return;
+
+        super.checkDespawn();
     }
 }
