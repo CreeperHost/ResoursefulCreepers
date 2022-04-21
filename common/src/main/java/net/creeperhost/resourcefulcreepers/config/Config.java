@@ -21,6 +21,7 @@ public class Config
     public boolean explosionsGenerateOres;
     public boolean overrideOreDrops;
     public boolean creepersAttractedToArmourStand;
+    public boolean disableSentry;
 
     public Config()
     {
@@ -31,6 +32,7 @@ public class Config
         explosionsGenerateOres = true;
         overrideOreDrops = false;
         creepersAttractedToArmourStand = true;
+        disableSentry = false;
     }
 
     public static String saveConfig()

@@ -32,30 +32,34 @@ public class ResourcefulCreepers
 
     public static void init()
     {
-        Sentry.init(options ->
+        if (!Constants.CONFIG_FOLDER.toFile().exists())
         {
-            options.setDsn("https://dcbda43f2f2a4ef38f702798205092dd@sentry.creeperhost.net/5");
+            LOGGER.info("Creating config folder at " + Constants.CONFIG_FOLDER);
+            Constants.CONFIG_FOLDER.toFile().mkdirs();
+        }
+        Config.init(Constants.CONFIG_FILE.toFile());
 
-            options.setTracesSampleRate(Platform.isDevelopmentEnvironment() ? 1.0 : 0.025);
-            options.setEnvironment(SharedConstants.getCurrentVersion().getName());
-            options.setRelease(Constants.MOD_VERSION);
-            options.setTag("commit", BuildInfo.version);
-            options.setTag("modloader", Minecraft.getInstance().getLaunchedVersion());
-            options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) /1024)));
-            options.setDist(System.getProperty("os.arch"));
-            options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
-            options.setDebug(Platform.isDevelopmentEnvironment());
-        });
+        if(!Config.INSTANCE.disableSentry)
+        {
+            Sentry.init(options ->
+            {
+                options.setDsn("https://dcbda43f2f2a4ef38f702798205092dd@sentry.creeperhost.net/5");
+
+                options.setTracesSampleRate(Platform.isDevelopmentEnvironment() ? 1.0 : 0.025);
+                options.setEnvironment(SharedConstants.getCurrentVersion().getName());
+                options.setRelease(Constants.MOD_VERSION);
+                options.setTag("commit", BuildInfo.version);
+                options.setTag("modloader", Minecraft.getInstance().getLaunchedVersion());
+                options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) / 1024)));
+                options.setDist(System.getProperty("os.arch"));
+                options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
+                options.setDebug(Platform.isDevelopmentEnvironment());
+                options.addInAppInclude("net.creeperhost.resourcefulcreepers");
+            });
+        }
 
         try
         {
-
-            if (!Constants.CONFIG_FOLDER.toFile().exists())
-            {
-                LOGGER.info("Creating config folder at " + Constants.CONFIG_FOLDER);
-                Constants.CONFIG_FOLDER.toFile().mkdirs();
-            }
-            Config.init(Constants.CONFIG_FILE.toFile());
             if (!Config.INSTANCE.generateDefaultTypes && !Constants.CREEPER_TYPES_CONFIG.toFile().exists())
             {
                 LOGGER.info("creeper_types.json does not exist, Creating new file using the ores tag");
