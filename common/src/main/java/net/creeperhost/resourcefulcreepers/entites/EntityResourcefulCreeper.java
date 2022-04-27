@@ -15,6 +15,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -398,5 +399,17 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         if(this.isBaby()) return;
 
         super.checkDespawn();
+    }
+
+    @Override
+    public SoundEvent getHurtSound(DamageSource damageSource)
+    {
+        return SoundEvents.CREEPER_HURT;
+    }
+
+    @Override
+    public SoundEvent getDeathSound()
+    {
+        return SoundEvents.CREEPER_DEATH;
     }
 }
