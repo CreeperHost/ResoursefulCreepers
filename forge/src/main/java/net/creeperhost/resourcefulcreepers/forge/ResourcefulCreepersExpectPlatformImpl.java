@@ -46,7 +46,7 @@ public class ResourcefulCreepersExpectPlatformImpl
         if(worldIn.getDifficulty() == Difficulty.PEACEFUL) return false;
         if(worldIn.getMaxLocalRawBrightness(pos) > 4) return false;
 
-        return true;
+        return reason == MobSpawnType.SPAWNER || worldIn.getBlockState(pos).isValidSpawn(worldIn, pos.below(), entityType);
     }
 
     public static List<Block> getDefaults()
