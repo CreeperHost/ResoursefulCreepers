@@ -186,7 +186,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             {
                 for (BlockPos blockPos : explosion.getToBlow())
                 {
-                    if (level.getBlockState(blockPos).isAir())
+                    if (level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).is(BlockTags.REPLACEABLE_PLANTS) || level.getBlockState(blockPos).is(BlockTags.SNOW))
                     {
                         level.setBlock(blockPos, block.defaultBlockState(), 3);
                     }
