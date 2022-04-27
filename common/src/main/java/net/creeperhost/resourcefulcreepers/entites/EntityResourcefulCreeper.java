@@ -88,6 +88,10 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     {
         if(level.isClientSide && creeperType != null)
         {
+            if(hasCustomName())
+            {
+                return getCustomName();
+            }
             return new TranslatableComponent(creeperType.getDisplayName());
         }
         if(super.getName() == null)
