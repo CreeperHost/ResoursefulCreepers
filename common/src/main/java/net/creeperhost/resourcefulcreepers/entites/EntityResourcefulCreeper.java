@@ -106,7 +106,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     public void registerGoals()
     {
         this.goalSelector.addGoal(1, new FloatGoal(this));
-        this.goalSelector.addGoal(2, new RcSwellGoal(this));
+        if(Config.INSTANCE.nonHostileWhenTamed) this.goalSelector.addGoal(2, new RcSwellGoal(this));
         this.goalSelector.addGoal(2, new BreedGoal(this, 1.0D));
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Ocelot.class, 6.0F, 1.0D, 1.2D));
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Cat.class, 6.0F, 1.0D, 1.2D));
@@ -114,7 +114,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8D));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        if(Config.INSTANCE.nonHostileWhenTamed) this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
         if(Config.INSTANCE.creepersAttractedToArmourStand) this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, ArmorStand.class, true));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
     }

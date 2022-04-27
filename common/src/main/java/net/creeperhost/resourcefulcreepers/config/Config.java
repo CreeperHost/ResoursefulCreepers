@@ -22,6 +22,7 @@ public class Config
     public boolean overrideOreDrops;
     public boolean creepersAttractedToArmourStand;
     public boolean disableSentry;
+    public boolean nonHostileWhenTamed;
 
     public Config()
     {
@@ -33,6 +34,7 @@ public class Config
         overrideOreDrops = false;
         creepersAttractedToArmourStand = true;
         disableSentry = false;
+        nonHostileWhenTamed = false;
     }
 
     public static String saveConfig()
