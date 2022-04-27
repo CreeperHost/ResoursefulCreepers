@@ -20,6 +20,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -35,9 +36,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -383,22 +382,12 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     }
 
     @Override
-    protected boolean shouldDespawnInPeaceful()
+    public boolean shouldDespawnInPeaceful()
     {
         //Only allow entity to despawn when the game is switched to peaceful if creeper is not tamed
         if(isTamed()) return false;
         if(isBaby()) return false;
         return true;
-    }
-
-    @Override
-    public void checkDespawn()
-    {
-        //Don't allow the entity to be depawned if its tamed
-        if(this.isTamed()) return;
-        if(this.isBaby()) return;
-
-        super.checkDespawn();
     }
 
     @Override
@@ -411,5 +400,29 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     public SoundEvent getDeathSound()
     {
         return SoundEvents.CREEPER_DEATH;
+    }
+
+    @Override
+    public boolean checkSpawnRules(LevelAccessor levelAccessor, MobSpawnType mobSpawnType)
+    {
+        return true;
+    }
+
+    @Override
+    public boolean checkSpawnObstruction(LevelReader arg)
+    {
+        return !arg.containsAnyLiquid(this.getBoundingBox()) && arg.isUnobstructed(this);
+    }
+
+    @Override
+    public int getMaxSpawnClusterSize()
+    {
+        return 4;
+    }
+
+    @Override
+    public boolean removeWhenFarAway(double d)
+    {
+        return true;
     }
 }
