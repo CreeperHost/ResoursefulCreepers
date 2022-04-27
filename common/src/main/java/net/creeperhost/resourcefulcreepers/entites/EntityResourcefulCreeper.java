@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -161,36 +162,37 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
 
     private void explodeCreeper()
     {
-        if (!this.level.isClientSide)
+        if (Config.INSTANCE.explosionsGenerateOres)
         {
-            if (Config.INSTANCE.explosionsGenerateOres)
+            float f = this.isPowered() ? Config.INSTANCE.poweredExplosionMultiplier : Config.INSTANCE.explosionMultiplier;
+            this.dead = true;
+            if(isBaby()) f = f / 2;
+            Explosion explosion = new Explosion(level, this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius * f);
+            explosion.explode();
+            Block block = Blocks.AIR;
+            if(level.isClientSide)
             {
-                float f = this.isPowered() ? Config.INSTANCE.poweredExplosionMultiplier : Config.INSTANCE.explosionMultiplier;
-                this.dead = true;
-                Explosion explosion = new Explosion(level, this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius * f);
-                explosion.explode();
-                Block block = Blocks.AIR;
-                if(level.isClientSide)
+                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+            }
+            for (ItemStack itemStack : getCreeperType().getItemDropsAsList())
+            {
+                if (itemStack != null && !itemStack.isEmpty() && itemStack.getItem() instanceof BlockItem blockItem)
                 {
-                    this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+                    block = blockItem.getBlock();
+                    break;
                 }
-                for (ItemStack itemStack : getCreeperType().getItemDropsAsList())
-                {
-                    if (itemStack != null && !itemStack.isEmpty() && itemStack.getItem() instanceof BlockItem blockItem)
-                    {
-                        block = blockItem.getBlock();
-                        break;
-                    }
-                }
+            }
+            if(!level.isClientSide)
+            {
                 for (BlockPos blockPos : explosion.getToBlow())
                 {
-                    if (!level.isClientSide && level.getBlockState(blockPos).isAir())
+                    if (level.getBlockState(blockPos).isAir())
                     {
                         level.setBlock(blockPos, block.defaultBlockState(), 3);
                     }
                 }
-                this.discard();
             }
+            this.discard();
         } else
         {
             Explosion.BlockInteraction blockInteraction = this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.NONE;
