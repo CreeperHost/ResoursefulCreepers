@@ -1,5 +1,6 @@
 package net.creeperhost.resourcefulcreepers.entites.goals;
 
+import net.creeperhost.resourcefulcreepers.config.Config;
 import net.creeperhost.resourcefulcreepers.entites.EntityResourcefulCreeper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -23,6 +24,7 @@ public class RcSwellGoal extends Goal
     public boolean canUse()
     {
         LivingEntity livingEntity = this.creeper.getTarget();
+        if(Config.INSTANCE.nonHostileWhenTamed && this.creeper.isTamed()) return false;
         return this.creeper.getSwellDir() > 0 || livingEntity != null && this.creeper.distanceToSqr(livingEntity) < 9.0D;
     }
 

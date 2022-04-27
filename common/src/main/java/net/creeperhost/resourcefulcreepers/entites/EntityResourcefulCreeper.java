@@ -21,6 +21,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -40,6 +42,7 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -110,15 +113,15 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     public void registerGoals()
     {
         this.goalSelector.addGoal(1, new FloatGoal(this));
-        if(Config.INSTANCE.nonHostileWhenTamed) this.goalSelector.addGoal(2, new RcSwellGoal(this));
+        this.goalSelector.addGoal(2, new RcSwellGoal(this));
         this.goalSelector.addGoal(2, new BreedGoal(this, 1.0D));
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Ocelot.class, 6.0F, 1.0D, 1.2D));
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Cat.class, 6.0F, 1.0D, 1.2D));
-        this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
+//        this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8D));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
-        if(Config.INSTANCE.nonHostileWhenTamed) this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
         if(Config.INSTANCE.creepersAttractedToArmourStand) this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, ArmorStand.class, true));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
     }
@@ -131,6 +134,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
                 .add(Attributes.FLYING_SPEED, 0.25D)
                 .add(Attributes.ARMOR, creeperType.getArmourValue())
+                .add(Attributes.ATTACK_KNOCKBACK)
                 .add(Attributes.FOLLOW_RANGE, 15.0D);
     }
 
@@ -158,7 +162,10 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             if (this.swell >= this.maxSwell)
             {
                 this.swell = this.maxSwell;
-                this.explodeCreeper();
+                if(!Config.INSTANCE.nonHostileWhenTamed && !isTamed())
+                {
+                    this.explodeCreeper();
+                }
             }
         }
         super.tick();
@@ -279,7 +286,12 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     @Override
     public boolean isFood(ItemStack itemStack)
     {
-        return itemStack.is(Items.GUNPOWDER);
+        boolean is = itemStack.is(Items.GUNPOWDER);
+        if(is)
+        {
+            setTamed();
+        }
+        return is;
     }
 
     @Nullable
@@ -308,7 +320,6 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         {
             entityResourcefulCreeper.setTamed();
         }
-        this.setTamed();
         return baby;
     }
 
