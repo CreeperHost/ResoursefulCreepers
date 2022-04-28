@@ -19,6 +19,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.TierSortingRegistry;
@@ -43,6 +44,7 @@ public class ResourcefulCreepersExpectPlatformImpl
 
     public static boolean genericGroundSpawn(EntityType<? extends Entity> entityType, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, Random random)
     {
+        if(!worldIn.dimensionType().natural()) return false;
         if(worldIn.getDifficulty() == Difficulty.PEACEFUL) return false;
         if(worldIn.getMaxLocalRawBrightness(pos) > 4) return false;
 
