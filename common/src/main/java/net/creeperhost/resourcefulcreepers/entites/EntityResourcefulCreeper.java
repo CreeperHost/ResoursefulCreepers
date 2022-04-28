@@ -143,6 +143,10 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     {
         if (this.isAlive())
         {
+            if(!this.shouldExplode())
+            {
+                this.setSwellDir(-1);
+            }
             this.oldSwell = this.swell;
             if (this.isIgnited())
             {
@@ -162,7 +166,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             if (this.swell >= this.maxSwell)
             {
                 this.swell = this.maxSwell;
-                if(shouldExplode()) this.explodeCreeper();
+                this.explodeCreeper();
             }
         }
         super.tick();
