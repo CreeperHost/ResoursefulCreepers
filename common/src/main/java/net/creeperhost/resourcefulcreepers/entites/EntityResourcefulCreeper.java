@@ -162,13 +162,17 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             if (this.swell >= this.maxSwell)
             {
                 this.swell = this.maxSwell;
-                if(!Config.INSTANCE.nonHostileWhenTamed && !isTamed())
-                {
-                    this.explodeCreeper();
-                }
+                if(shouldExplode()) this.explodeCreeper();
             }
         }
         super.tick();
+    }
+
+    public boolean shouldExplode()
+    {
+        if(Config.INSTANCE.nonHostileWhenTamed && isTamed()) return false;
+
+        return true;
     }
 
     private void explodeCreeper()

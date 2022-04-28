@@ -24,7 +24,6 @@ public class RcSwellGoal extends Goal
     public boolean canUse()
     {
         LivingEntity livingEntity = this.creeper.getTarget();
-        if(Config.INSTANCE.nonHostileWhenTamed && this.creeper.isTamed()) return false;
         return this.creeper.getSwellDir() > 0 || livingEntity != null && this.creeper.distanceToSqr(livingEntity) < 9.0D;
     }
 
