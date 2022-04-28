@@ -26,6 +26,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +34,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -118,11 +120,13 @@ public class ModEntities
 
     public static void createResourcePack()
     {
+        System.out.println("Creating resource pack");
         Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
         String jsonString = gson.toJson(MOB_NAMES);
         File folders = Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers/assets/resourcefulcreepers/lang").toFile();
-        File file = folders.toPath().resolve("en_us.json").toFile();
         if(!folders.exists()) folders.mkdirs();
+        File file = folders.toPath().resolve("en_us.json").toFile();
+        createMeta(Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers/pack.mcmeta").toFile());
         if(!file.exists())
         {
             try (FileOutputStream configOut = new FileOutputStream(file))
@@ -137,6 +141,31 @@ public class ModEntities
         {
             e.printStackTrace();
         }
+    }
+
+    public static void createMeta(File file)
+    {
+        if(!file.exists())
+        {
+            Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+            Meta meta = new Meta();
+            String json = gson.toJson(meta);
+            try (FileOutputStream configOut = new FileOutputStream(file))
+            {
+                IOUtils.write(json, configOut, Charset.defaultCharset());
+            } catch (Throwable ignored) {}
+        }
+    }
+
+    public static class Meta
+    {
+        Pack pack = new Pack();
+    }
+
+    public static class Pack
+    {
+        String description = "resourcefulcreepers";
+        int pack_format = 8;
     }
 
     public static void pack(String sourceDirPath, String zipFilePath) throws IOException
