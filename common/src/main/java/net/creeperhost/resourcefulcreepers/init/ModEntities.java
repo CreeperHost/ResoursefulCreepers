@@ -1,5 +1,7 @@
 package net.creeperhost.resourcefulcreepers.init;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
@@ -10,6 +12,7 @@ import io.sentry.Sentry;
 import net.creeperhost.resourcefulcreepers.Constants;
 import net.creeperhost.resourcefulcreepers.ResourcefulCreepersExpectPlatform;
 import net.creeperhost.resourcefulcreepers.client.ResourcefulCreeperRender;
+import net.creeperhost.resourcefulcreepers.config.Config;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.data.CreeperTypeList;
 import net.creeperhost.resourcefulcreepers.entites.EntityResourcefulCreeper;
@@ -23,10 +26,21 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class ModEntities
 {
@@ -34,6 +48,7 @@ public class ModEntities
     public static final DeferredRegister<Item> SPAWN_EGG_ITEMS = DeferredRegister.create(Constants.MOD_ID, Registry.ITEM_REGISTRY);
     public static final CreativeModeTab CREATIVE_TAB = CreativeTabRegistry.create(new ResourceLocation(Constants.MOD_ID, "creative_tab"), () -> new ItemStack(Items.CREEPER_HEAD));
     public static final HashMap<EntityType<EntityResourcefulCreeper>, Integer> STORED_TYPES = new HashMap<>();
+    public static final HashMap<String, String> MOB_NAMES = new HashMap<>();
 
     public static void init()
     {
@@ -60,6 +75,7 @@ public class ModEntities
 
                     if (Platform.getEnvironment() == Env.CLIENT)
                     {
+                        MOB_NAMES.put(creeperType.getName(), creeperType.getDisplayName());
                         EntityRendererRegistry.register(() -> entityType, ResourcefulCreeperRender::new);
                     }
 
@@ -91,8 +107,56 @@ public class ModEntities
                 e.printStackTrace();
             }
         }
+        if(Platform.getEnvironment() == Env.CLIENT)
+        {
+            createResourcePack();
+        }
         ENTITIES.register();
         SPAWN_EGG_ITEMS.register();
         STORED_TYPES.forEach(ResourcefulCreepersExpectPlatform::registerSpawns);
+    }
+
+    public static void createResourcePack()
+    {
+        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        String jsonString = gson.toJson(MOB_NAMES);
+        File folders = Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers/assets/resourcefulcreepers/lang").toFile();
+        File file = folders.toPath().resolve("en_us.json").toFile();
+        if(!folders.exists()) folders.mkdirs();
+        if(!file.exists())
+        {
+            try (FileOutputStream configOut = new FileOutputStream(file))
+            {
+                IOUtils.write(jsonString, configOut, Charset.defaultCharset());
+            } catch (Throwable ignored) {}
+        }
+        try
+        {
+            pack(Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers").toString(), Platform.getGameFolder().resolve("resourcepacks/ResourcefulCreepers.zip").toString());
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void pack(String sourceDirPath, String zipFilePath) throws IOException
+    {
+        if(Paths.get(zipFilePath).toFile().exists()) return;
+        Path p = Files.createFile(Paths.get(zipFilePath));
+        Path pp = Paths.get(sourceDirPath);
+        try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(p));
+             Stream<Path> paths = Files.walk(pp)) {
+            paths.filter(path -> !Files.isDirectory(path)).forEach(path ->
+            {
+                ZipEntry zipEntry = new ZipEntry(pp.relativize(path).toString());
+                try {
+                    zs.putNextEntry(zipEntry);
+                    Files.copy(path, zs);
+                    zs.closeEntry();
+                } catch (IOException e) {
+                    System.err.println(e);
+                }
+            });
+        }
     }
 }
