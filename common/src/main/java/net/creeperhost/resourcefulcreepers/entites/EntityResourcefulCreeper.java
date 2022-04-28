@@ -261,9 +261,15 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     {
         return this.entityData.get(DATA_IS_TAMED);
     }
+
     public void setTamed()
     {
         this.entityData.set(DATA_IS_TAMED, true);
+    }
+
+    public void removedTamed()
+    {
+        this.entityData.set(DATA_IS_TAMED, false);
     }
 
     @Override
@@ -281,6 +287,16 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
                 }
             }
         }
+    }
+
+    @Override
+    public boolean hurt(DamageSource damageSource, float f)
+    {
+        if(damageSource.getEntity() != null && damageSource.getEntity() instanceof Player)
+        {
+            removedTamed();
+        }
+        return super.hurt(damageSource, f);
     }
 
     //Make our creepers drop Vanilla creepers loot
