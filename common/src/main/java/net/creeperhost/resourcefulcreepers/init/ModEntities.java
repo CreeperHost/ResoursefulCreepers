@@ -77,7 +77,7 @@ public class ModEntities
 
                     if (Platform.getEnvironment() == Env.CLIENT)
                     {
-                        MOB_NAMES.put(creeperType.getName(), creeperType.getDisplayName());
+                        MOB_NAMES.put("entity.resourcefulcreepers." + creeperType.getName(), creeperType.getDisplayName());
                         EntityRendererRegistry.register(() -> entityType, ResourcefulCreeperRender::new);
                     }
 
