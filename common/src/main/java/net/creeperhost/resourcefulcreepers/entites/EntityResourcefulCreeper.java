@@ -5,6 +5,7 @@ import net.creeperhost.resourcefulcreepers.config.Config;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.entites.goals.RcSwellGoal;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -15,12 +16,15 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -117,7 +121,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         this.goalSelector.addGoal(2, new BreedGoal(this, 1.0D));
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Ocelot.class, 6.0F, 1.0D, 1.2D));
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Cat.class, 6.0F, 1.0D, 1.2D));
-//        this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
+        this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8D));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
@@ -129,7 +133,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     public static AttributeSupplier.Builder prepareAttributes(CreeperType creeperType)
     {
         return LivingEntity.createLivingAttributes()
-                .add(Attributes.ATTACK_DAMAGE, 3.0D)
+                .add(Attributes.ATTACK_DAMAGE, 0.1D)
                 .add(Attributes.MAX_HEALTH, 20.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
                 .add(Attributes.FLYING_SPEED, 0.25D)
@@ -181,6 +185,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
 
     private void explodeCreeper()
     {
+        System.out.println("IsTamed, " + isTamed());
         if (Config.INSTANCE.explosionsGenerateOres)
         {
             float f = this.isPowered() ? Config.INSTANCE.poweredExplosionMultiplier : Config.INSTANCE.explosionMultiplier;
@@ -334,10 +339,6 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             {
                 int random = serverLevel.random.nextInt(possible.size());
                 baby = (AgeableMob) possible.get(random).create(serverLevel);
-                if(baby instanceof EntityResourcefulCreeper c)
-                {
-                    c.setTamed();
-                }
             }
         }
         if(ageableMob instanceof EntityResourcefulCreeper entityResourcefulCreeper)
@@ -345,6 +346,40 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             entityResourcefulCreeper.setTamed();
         }
         return baby;
+    }
+
+    @Override
+    public void spawnChildFromBreeding(ServerLevel serverLevel, Animal animal)
+    {
+        AgeableMob ageableMob = this.getBreedOffspring(serverLevel, animal);
+        if (ageableMob != null) {
+            ServerPlayer serverPlayer = this.getLoveCause();
+            if (serverPlayer == null && animal.getLoveCause() != null) {
+                serverPlayer = animal.getLoveCause();
+            }
+
+            if (serverPlayer != null) {
+                serverPlayer.awardStat(Stats.ANIMALS_BRED);
+                CriteriaTriggers.BRED_ANIMALS.trigger(serverPlayer, this, animal, ageableMob);
+            }
+
+            this.setAge(6000);
+            animal.setAge(6000);
+            this.resetLove();
+            animal.resetLove();
+            ageableMob.setBaby(true);
+            ageableMob.moveTo(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
+            if(ageableMob instanceof EntityResourcefulCreeper entityResourcefulCreeper)
+            {
+                entityResourcefulCreeper.setTamed();
+            }
+            serverLevel.addFreshEntityWithPassengers(ageableMob);
+            serverLevel.broadcastEntityEvent(this, (byte)18);
+            if (serverLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+                serverLevel.addFreshEntity(new ExperienceOrb(serverLevel, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
+            }
+
+        }
     }
 
     public List<EntityType<?>> getFromTier(int tier, Level level)
