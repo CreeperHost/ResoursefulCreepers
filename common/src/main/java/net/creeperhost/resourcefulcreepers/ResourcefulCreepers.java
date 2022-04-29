@@ -13,7 +13,6 @@ import net.creeperhost.resourcefulcreepers.data.ItemDrop;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.fabricmc.api.EnvType;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,7 +48,7 @@ public class ResourcefulCreepers
                 options.setEnvironment(SharedConstants.getCurrentVersion().getName());
                 options.setRelease(Constants.MOD_VERSION);
                 options.setTag("commit", BuildInfo.version);
-                options.setTag("modloader", Minecraft.getInstance().getLaunchedVersion());
+                options.setTag("modloader", Platform.isForge() ? "Forge" : "Fabric");
                 options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) / 1024)));
                 options.setDist(System.getProperty("os.arch"));
                 options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
