@@ -167,7 +167,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             {
                 this.swell = 0;
             }
-            if (this.swell >= this.maxSwell)
+            if (this.swell > this.maxSwell || level.isClientSide && this.swell >= this.maxSwell -1)
             {
                 this.swell = this.maxSwell;
                 this.explodeCreeper();
@@ -185,19 +185,22 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
 
     private void explodeCreeper()
     {
-        System.out.println("IsTamed, " + isTamed());
         if (Config.INSTANCE.explosionsGenerateOres)
         {
             float f = this.isPowered() ? Config.INSTANCE.poweredExplosionMultiplier : Config.INSTANCE.explosionMultiplier;
             this.dead = true;
             if(isBaby()) f = f / 2;
-            Explosion explosion = new Explosion(level, this, this.getX(), this.getY(), this.getZ(), (float) this.explosionRadius * f);
-            explosion.explode();
-            Block block = Blocks.AIR;
+            double x = getX();
+            double y = getY();
+            double z = getZ();
+
             if(level.isClientSide)
             {
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+                this.level.playLocalSound(x, y, z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
             }
+            Explosion explosion = new Explosion(this.level, this, x, y, z, (float) this.explosionRadius * f);
+            explosion.explode();
+            Block block = Blocks.AIR;
             for (ItemStack itemStack : getCreeperType().getItemDropsAsList())
             {
                 if (itemStack != null && !itemStack.isEmpty() && itemStack.getItem() instanceof BlockItem blockItem)
