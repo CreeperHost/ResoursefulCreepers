@@ -23,10 +23,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -46,7 +42,6 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -147,6 +142,10 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     {
         if (this.isAlive())
         {
+            if(Config.INSTANCE.nonHostileWhenTamed && this.isTamed() && this.getTarget() != null && this.getTarget() instanceof Player)
+            {
+                this.setTarget(null);
+            }
             if(!this.shouldExplode())
             {
                 this.setSwellDir(-1);
@@ -213,7 +212,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             {
                 for (BlockPos blockPos : explosion.getToBlow())
                 {
-                    if (level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).is(BlockTags.REPLACEABLE_PLANTS) || level.getBlockState(blockPos).is(BlockTags.SNOW))
+                    if (Config.INSTANCE.forceAirBlock && level.getBlockState(blockPos).getBlock() == Blocks.AIR || level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).is(BlockTags.REPLACEABLE_PLANTS) || level.getBlockState(blockPos).is(BlockTags.SNOW))
                     {
                         level.setBlock(blockPos, block.defaultBlockState(), 3);
                     }

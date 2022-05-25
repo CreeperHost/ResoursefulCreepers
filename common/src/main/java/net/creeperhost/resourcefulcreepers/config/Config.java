@@ -23,6 +23,7 @@ public class Config
     public boolean creepersAttractedToArmourStand;
     public boolean disableSentry;
     public boolean nonHostileWhenTamed;
+    public boolean forceAirBlock;
 
     public Config()
     {
@@ -35,6 +36,7 @@ public class Config
         creepersAttractedToArmourStand = true;
         disableSentry = false;
         nonHostileWhenTamed = false;
+        forceAirBlock = false;
     }
 
     public static String saveConfig()

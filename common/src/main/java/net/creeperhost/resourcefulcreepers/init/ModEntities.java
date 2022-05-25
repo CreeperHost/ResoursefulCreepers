@@ -120,23 +120,31 @@ public class ModEntities
 
     public static void createResourcePack()
     {
-        System.out.println("Creating resource pack");
-        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-        String jsonString = gson.toJson(MOB_NAMES);
-        File folders = Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers/assets/resourcefulcreepers/lang").toFile();
-        if(!folders.exists()) folders.mkdirs();
-        File file = folders.toPath().resolve("en_us.json").toFile();
-        createMeta(Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers/pack.mcmeta").toFile());
-        if(!file.exists())
-        {
-            try (FileOutputStream configOut = new FileOutputStream(file))
-            {
-                IOUtils.write(jsonString, configOut, Charset.defaultCharset());
-            } catch (Throwable ignored) {}
-        }
         try
         {
-            pack(Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers").toString(), Platform.getGameFolder().resolve("resourcepacks/ResourcefulCreepers.zip").toString());
+            System.out.println("Creating resource pack");
+            Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+            String jsonString = gson.toJson(MOB_NAMES);
+            File folders = Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers/assets/minecraft/lang").toFile();
+            if (!folders.exists()) folders.mkdirs();
+            File file = folders.toPath().resolve("en_us.json").toFile();
+            createMeta(Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers/pack.mcmeta").toFile());
+            if (!file.exists())
+            {
+                try (FileOutputStream configOut = new FileOutputStream(file))
+                {
+                    IOUtils.write(jsonString, configOut, Charset.defaultCharset());
+                } catch (Throwable ignored)
+                {
+                }
+            }
+            try
+            {
+                pack(Constants.CONFIG_FOLDER.resolve("ResourcefulCreepers").toString(), Platform.getGameFolder().resolve("resourcepacks/ResourcefulCreepers.zip").toString());
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -183,7 +191,7 @@ public class ModEntities
                     Files.copy(path, zs);
                     zs.closeEntry();
                 } catch (IOException e) {
-                    System.err.println(e);
+                    e.printStackTrace();
                 }
             });
         }
