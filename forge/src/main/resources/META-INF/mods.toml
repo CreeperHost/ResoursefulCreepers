@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
+loaderVersion = "[41,)"
 #issueTrackerURL = ""
 license = "Insert License Here"
 
@@ -16,20 +16,20 @@ Backup all the things!
 [[dependencies.resourcefulcreepers]]
 modId = "forge"
 mandatory = true
-versionRange = "[38,)"
+versionRange = "[41,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.resourcefulcreepers]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.18.2,)"
+versionRange = "[1.19,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.resourcefulcreepers]]
 modId = "architectury"
 mandatory = true
-versionRange = "[4.1.32,)"
+versionRange = "[5.5.16,)"
 ordering = "AFTER"
 side = "BOTH"

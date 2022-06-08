@@ -22,8 +22,8 @@ public class ColorHelper
         ResourceLocation particleLocation = new ResourceLocation(textureAtlasSprite.getName().getNamespace(), "textures/" + textureAtlasSprite.getName().getPath() + ".png");
         try
         {
-            Resource resource = Minecraft.getInstance().getResourceManager().getResource(particleLocation);
-            NativeImage nativeImage = NativeImage.read(resource.getInputStream());
+            Resource resource = Minecraft.getInstance().getResourceManager().getResource(particleLocation).get();
+            NativeImage nativeImage = NativeImage.read(resource.open());
             List<Integer> colourList = new ArrayList<>();
             for (int i = 0; i < nativeImage.getHeight(); i++)
             {

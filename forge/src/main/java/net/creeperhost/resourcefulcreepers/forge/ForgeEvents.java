@@ -11,8 +11,6 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -21,19 +19,20 @@ import java.util.Random;
 @Mod.EventBusSubscriber(modid = Constants.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEvents
 {
-    @SubscribeEvent
-    public static void onBiomeLoading(BiomeLoadingEvent event)
-    {
-        ModEntities.STORED_TYPES.forEach((entityResourcefulCreeperEntityType, integer) ->
-        {
-            try
-            {
-                event.getSpawns().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(entityResourcefulCreeperEntityType, integer, 1, 1));
-            } catch (Exception e)
-            {
-                Sentry.captureException(e);
-                e.printStackTrace();
-            }
-        });
-    }
+    //TODO this has been removed from Forge
+//    @SubscribeEvent
+//    public static void onBiomeLoading(BiomeLoadingEvent event)
+//    {
+//        ModEntities.STORED_TYPES.forEach((entityResourcefulCreeperEntityType, integer) ->
+//        {
+//            try
+//            {
+//                event.getSpawns().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(entityResourcefulCreeperEntityType, integer, 1, 1));
+//            } catch (Exception e)
+//            {
+//                Sentry.captureException(e);
+//                e.printStackTrace();
+//            }
+//        });
+//    }
 }

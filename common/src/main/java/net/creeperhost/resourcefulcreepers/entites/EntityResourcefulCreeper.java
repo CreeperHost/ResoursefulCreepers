@@ -9,8 +9,6 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -94,11 +92,11 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             {
                 return getCustomName();
             }
-            return new TranslatableComponent(creeperType.getDisplayName());
+            return Component.translatable(creeperType.getDisplayName());
         }
         if(super.getName() == null)
         {
-            return new TextComponent("null");
+            return Component.literal("null");
         }
         return super.getName();
     }

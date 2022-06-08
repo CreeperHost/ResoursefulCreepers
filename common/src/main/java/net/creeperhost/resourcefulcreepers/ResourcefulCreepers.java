@@ -95,7 +95,7 @@ public class ResourcefulCreepers
                 }
             }
             generateDefaultTypes();
-            if(Platform.isFabric()) ModEntities.init();
+            ModEntities.ENTITIES.register();
             if (Platform.getEnvironment() == Env.CLIENT)
             {
                 ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world ->

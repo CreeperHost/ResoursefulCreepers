@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -37,12 +38,12 @@ public class ResourcefulCreepersExpectPlatformImpl
         return FMLPaths.CONFIGDIR.get();
     }
 
-    public static void registerSpawns(EntityType<EntityResourcefulCreeper> entityType, int weight)
+    public static void registerSpawns(EntityType entityType, int weight)
     {
         SpawnPlacements.register(entityType, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, ResourcefulCreepersExpectPlatformImpl::genericGroundSpawn);
     }
 
-    public static boolean genericGroundSpawn(EntityType<? extends Entity> entityType, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, Random random)
+    public static boolean genericGroundSpawn(EntityType<? extends Entity> entityType, LevelAccessor worldIn, MobSpawnType reason, BlockPos pos, RandomSource random)
     {
         if(!worldIn.dimensionType().natural()) return false;
         if(worldIn.getDifficulty() == Difficulty.PEACEFUL) return false;

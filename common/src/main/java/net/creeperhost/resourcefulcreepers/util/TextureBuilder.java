@@ -33,8 +33,8 @@ public class TextureBuilder
             ItemStack itemStack = creeperType.getItemDropsAsList().get(0);
             try
             {
-                Resource resource = Minecraft.getInstance().getResourceManager().getResource(ResourcefulCreeperRender.CREEPER_LOCATION);
-                NativeImage nativeImage = NativeImage.read(resource.getInputStream());
+                Resource resource = Minecraft.getInstance().getResourceManager().getResource(ResourcefulCreeperRender.CREEPER_LOCATION).get();
+                NativeImage nativeImage = NativeImage.read(resource.open());
 
                 int lastColour = 0;
                 int lastRandomColour = 0;
