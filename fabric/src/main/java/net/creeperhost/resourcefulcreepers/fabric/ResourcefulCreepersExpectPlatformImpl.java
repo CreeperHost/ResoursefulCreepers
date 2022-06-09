@@ -26,41 +26,41 @@ public class ResourcefulCreepersExpectPlatformImpl
         return FabricLoader.getInstance().getConfigDir();
     }
 
-    public static void registerSpawns(EntityType<EntityResourcefulCreeper> entityType, int weight)
-    {
-        finalBiomeExclusion = new ArrayList<>();
-
-        Predicate<BiomeSelectionContext> spawnPredicate = overWorldNoSwampNoGoZones();
-        BiomeModifications.addSpawn(spawnPredicate, MobCategory.MONSTER, entityType, weight, 1, 1);
-    }
-
-    //TODO Move to PolyLib
-    static ArrayList<ResourceLocation> finalBiomeExclusion;
-
-    public static Predicate<BiomeSelectionContext> overWorldNoSwampNoGoZones() {
-        Predicate<BiomeSelectionContext> excluded = Predicate.not(exclusion());
-        return BiomeSelectors.all().and(shroomExclusion()).and(netherExclusion()).and(endExclusion()).and(swampExclusion()).and(excluded);
-    }
-
-    public static Predicate<BiomeSelectionContext> exclusion() {
-        return context -> finalBiomeExclusion.contains(context.getBiomeKey().location());
-    }
-
-    public static Predicate<BiomeSelectionContext> shroomExclusion() {
-        return Predicate.not(BiomeSelectors.categories(Biome.BiomeCategory.MUSHROOM));
-    }
-
-    public static Predicate<BiomeSelectionContext> netherExclusion() {
-        return Predicate.not(BiomeSelectors.categories(Biome.BiomeCategory.NETHER));
-    }
-
-    public static Predicate<BiomeSelectionContext> endExclusion() {
-        return Predicate.not(BiomeSelectors.categories(Biome.BiomeCategory.THEEND));
-    }
-
-    public static Predicate<BiomeSelectionContext> swampExclusion() {
-        return Predicate.not(BiomeSelectors.categories(Biome.BiomeCategory.SWAMP));
-    }
+//    public static void registerSpawns(EntityType<EntityResourcefulCreeper> entityType, int weight)
+//    {
+//        finalBiomeExclusion = new ArrayList<>();
+//
+//        Predicate<BiomeSelectionContext> spawnPredicate = overWorldNoSwampNoGoZones();
+//        BiomeModifications.addSpawn(spawnPredicate, MobCategory.MONSTER, entityType, weight, 1, 1);
+//    }
+//
+//    //TODO Move to PolyLib
+//    static ArrayList<ResourceLocation> finalBiomeExclusion;
+//
+//    public static Predicate<BiomeSelectionContext> overWorldNoSwampNoGoZones() {
+//        Predicate<BiomeSelectionContext> excluded = Predicate.not(exclusion());
+//        return BiomeSelectors.all().and(shroomExclusion()).and(netherExclusion()).and(endExclusion()).and(swampExclusion()).and(excluded);
+//    }
+//
+//    public static Predicate<BiomeSelectionContext> exclusion() {
+//        return context -> finalBiomeExclusion.contains(context.getBiomeKey().location());
+//    }
+//
+//    public static Predicate<BiomeSelectionContext> shroomExclusion() {
+//        return Predicate.not(BiomeSelectors.categories(Biome.BiomeCategory.MUSHROOM));
+//    }
+//
+//    public static Predicate<BiomeSelectionContext> netherExclusion() {
+//        return Predicate.not(BiomeSelectors.categories(Biome.BiomeCategory.NETHER));
+//    }
+//
+//    public static Predicate<BiomeSelectionContext> endExclusion() {
+//        return Predicate.not(BiomeSelectors.categories(Biome.BiomeCategory.THEEND));
+//    }
+//
+//    public static Predicate<BiomeSelectionContext> swampExclusion() {
+//        return Predicate.not(BiomeSelectors.categories(Biome.BiomeCategory.SWAMP));
+//    }
 
     public static int getColour(ItemStack itemStack)
     {

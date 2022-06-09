@@ -5,9 +5,11 @@ import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
+import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import net.creeperhost.resourcefulcreepers.Constants;
+import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
 import net.creeperhost.resourcefulcreepers.client.ResourcefulCreeperRender;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.data.CreeperTypeList;
@@ -79,6 +81,8 @@ public class ModEntities
                    return Component.literal(creeperType.getDisplayName() + " Spawn Egg");
                }
            }));
+
+           ResourcefulCreepers.addSpawn(() -> CREEPERS.get(creeperType).get());
        }
     });
 

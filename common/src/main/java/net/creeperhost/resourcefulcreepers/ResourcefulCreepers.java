@@ -2,10 +2,13 @@ package net.creeperhost.resourcefulcreepers;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
+import dev.architectury.hooks.level.biome.BiomeProperties;
 import dev.architectury.platform.Platform;
+import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.architectury.utils.Env;
 import io.sentry.Sentry;
 import net.creeperhost.resourcefulcreepers.config.Config;
+import net.creeperhost.resourcefulcreepers.mixin.SpawnPlacementsInvoker;
 import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.data.CreeperTypeList;
@@ -13,6 +16,19 @@ import net.creeperhost.resourcefulcreepers.data.ItemDrop;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.fabricmc.api.EnvType;
 import net.minecraft.SharedConstants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.levelgen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,6 +37,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 public class ResourcefulCreepers
 {
@@ -129,6 +146,29 @@ public class ResourcefulCreepers
         {
             Sentry.captureException(e);
         }
+
+
+    }
+
+    public static void addSpawn(Supplier<EntityType<?>> entityType)
+    {
+        try
+        {
+            BiomeModifications.addProperties(biomeContext -> canSpawnBiome(biomeContext.getProperties()), (biomeContext, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER,
+                    new MobSpawnSettings.SpawnerData(entityType.get(), 4, 4, 10)));
+
+            SpawnPlacementsInvoker.callRegister(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, ResourcefulCreepers::checkMonsterSpawnRules);
+        } catch (Exception ignored) {}
+    }
+
+    public static boolean checkMonsterSpawnRules(EntityType<? extends Monster> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
+        return true;
+    }
+
+    private static boolean canSpawnBiome(BiomeProperties category)
+    {
+        //TODO
+        return true;
     }
 
     public static void generateDefaultTypes()
