@@ -96,6 +96,7 @@ public class ResourcefulCreepers
             }
             generateDefaultTypes();
             ModEntities.ENTITIES.register();
+            ModEntities.ITEMS.register();
             if (Platform.getEnvironment() == Env.CLIENT)
             {
                 ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world ->

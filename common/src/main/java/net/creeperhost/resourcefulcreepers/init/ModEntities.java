@@ -7,9 +7,6 @@ import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
-import dev.architectury.utils.Env;
-import io.sentry.Sentry;
 import net.creeperhost.resourcefulcreepers.Constants;
 import net.creeperhost.resourcefulcreepers.client.ResourcefulCreeperRender;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
@@ -21,14 +18,10 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,8 +41,13 @@ import java.util.zip.ZipOutputStream;
 public class ModEntities
 {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Constants.MOD_ID, Registry.ENTITY_TYPE_REGISTRY);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Constants.MOD_ID, Registry.ITEM_REGISTRY);
+    public static final CreativeModeTab CREATIVE_MODE_TAB = CreativeTabRegistry.create(new ResourceLocation(Constants.MOD_ID, "creative_tab"), () -> new ItemStack(Items.CREEPER_HEAD));
+
+    @Deprecated
     public static final HashMap<EntityType<EntityResourcefulCreeper>, Integer> STORED_TYPES = new HashMap<>();
 
+    @Deprecated
     public static final HashMap<String, String> MOB_NAMES = new HashMap<>();
 
     public static final Map<CreeperType, Supplier<EntityType<EntityResourcefulCreeper>>> CREEPERS = Util.make(new LinkedHashMap<>(), map ->
@@ -69,6 +67,22 @@ public class ModEntities
         }
     });
 
+    public static final HashMap<CreeperType, Supplier<Item>> EGGS = Util.make(new LinkedHashMap<>(), map ->
+    {
+       for(CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes)
+       {
+           map.put(creeperType, ITEMS.register(creeperType.getName(), () -> new SpawnEggItem(CREEPERS.get(creeperType).get(), creeperType.getSpawnEggColour1(), creeperType.getSpawnEggColour2(), new Item.Properties().tab(CREATIVE_MODE_TAB))
+           {
+               @Override
+               public Component getName(@NotNull ItemStack itemStack)
+               {
+                   return Component.literal(creeperType.getDisplayName() + " Spawn Egg");
+               }
+           }));
+       }
+    });
+
+    @Deprecated
     public static void createResourcePack()
     {
         try
@@ -102,6 +116,7 @@ public class ModEntities
         }
     }
 
+    @Deprecated
     public static void createMeta(File file)
     {
         if(!file.exists())
@@ -116,17 +131,20 @@ public class ModEntities
         }
     }
 
+    @Deprecated
     public static class Meta
     {
         Pack pack = new Pack();
     }
 
+    @Deprecated
     public static class Pack
     {
         String description = "resourcefulcreepers";
         int pack_format = 8;
     }
 
+    @Deprecated
     public static void pack(String sourceDirPath, String zipFilePath) throws IOException
     {
         if(Paths.get(zipFilePath).toFile().exists()) return;

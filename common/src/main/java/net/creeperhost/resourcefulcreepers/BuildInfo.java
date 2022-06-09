@@ -1,8 +1,8 @@
 package net.creeperhost.resourcefulcreepers;
 
 public class BuildInfo {
-    public static final String version = "d99fa1d075";
-    public static final String buildTimestamp = "Wed Jun 08 21:04:10 BST 2022";
+    public static final String version = "6b18eff884";
+    public static final String buildTimestamp = "Thu Jun 09 10:35:08 GMT 2022";
 
     public String toString() {
         return "version         : " + version + "\n" +
