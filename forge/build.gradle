@@ -55,9 +55,6 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-//    dependencies {
-//        exclude(dependency("com.google.gson::"))
-//    }
     relocate 'io.sentry', 'net.creeperhost.resourcefulcreepers.io.sentry'
     classifier "dev-shadow"
 }

@@ -27,9 +27,8 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
-//    implementation 'io.sentry:sentry:5.7.2'
-//    implementation "blue.endless:jankson:1.2.1"
-//    shadowCommon "blue.endless:jankson:1.2.1"
+    implementation 'io.sentry:sentry:5.7.2'
+    shadowCommon "io.sentry:sentry:5.7.2"
 }
 
 processResources {
@@ -49,7 +48,7 @@ shadowJar {
         exclude(dependency("javax.transaction::"))
     }
 
-//    relocate 'blue.endless.jankson', 'net.creeperhost.creeperbackups.blue.endless.jankson'
+    relocate 'io.sentry', 'net.creeperhost.resourcefulcreepers.io.sentry'
     classifier "dev-shadow"
 }
 
