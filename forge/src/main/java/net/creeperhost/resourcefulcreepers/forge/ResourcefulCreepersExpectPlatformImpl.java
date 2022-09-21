@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
@@ -47,6 +48,7 @@ public class ResourcefulCreepersExpectPlatformImpl
         if(!worldIn.dimensionType().natural()) return false;
         if(worldIn.getDifficulty() == Difficulty.PEACEFUL) return false;
         if(worldIn.getMaxLocalRawBrightness(pos) > 4) return false;
+        if(worldIn.getBlockState(pos).is(BlockTags.PREVENT_MOB_SPAWNING_INSIDE)) return false;
 
         return true;
     }
