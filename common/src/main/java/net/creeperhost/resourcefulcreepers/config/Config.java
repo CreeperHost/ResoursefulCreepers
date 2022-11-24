@@ -25,6 +25,8 @@ public class Config
     public boolean nonHostileWhenTamed;
     public boolean forceAirBlock;
     public boolean nerfDropsWhenAutomated;
+    public int nerfDropPercentage;
+    public int noDropChance;
 
     public Config()
     {
@@ -39,6 +41,8 @@ public class Config
         nonHostileWhenTamed = false;
         forceAirBlock = false;
         nerfDropsWhenAutomated = false;
+        nerfDropPercentage = 20;
+        noDropChance = 20;
     }
 
     public static String saveConfig()

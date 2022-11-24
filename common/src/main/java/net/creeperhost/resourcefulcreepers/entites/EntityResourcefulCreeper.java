@@ -284,8 +284,8 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         super.dropCustomDeathLoot(damageSource, i, bl);
 
         boolean autoMated = isAutomated(damageSource);
-        int random = level.getRandom().nextInt(2);
-        boolean failed = random == 1;
+        int random = level.getRandom().nextInt(0, 100);
+        boolean failed = random <= Config.INSTANCE.noDropChance;
 
         if(getCreeperType().shouldDropItemsOnDeath() && !Config.INSTANCE.overrideOreDrops)
         {
@@ -293,6 +293,13 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
 
             for (ItemStack itemStack : getCreeperType().getItemDropsAsList())
             {
+                if(autoMated)
+                {
+                    int current = itemStack.getCount();
+                    int nerfed = (int)(current * (Config.INSTANCE.nerfDropPercentage / 100.0f));
+                    //Always make sure we have at least one in the itemstack
+                    itemStack.setCount(Math.min(1, nerfed));
+                }
                 if (itemStack != null && !itemStack.isEmpty())
                 {
                     this.spawnAtLocation(itemStack);
