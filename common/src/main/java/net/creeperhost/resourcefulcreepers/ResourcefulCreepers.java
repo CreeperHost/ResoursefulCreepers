@@ -7,7 +7,8 @@ import dev.architectury.platform.Platform;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.architectury.utils.Env;
 import io.sentry.Sentry;
-import net.creeperhost.resourcefulcreepers.config.Config;
+import net.creeperhost.polylib.config.ConfigBuilder;
+import net.creeperhost.resourcefulcreepers.config.ConfigDataRC;
 import net.creeperhost.resourcefulcreepers.mixin.SpawnPlacementsInvoker;
 import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
@@ -17,25 +18,17 @@ import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.fabricmc.api.EnvType;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,6 +43,8 @@ import java.util.function.Supplier;
 public class ResourcefulCreepers
 {
     public static Logger LOGGER = LogManager.getLogger();
+    public static ConfigBuilder configBuilder;
+    public static ConfigDataRC configData;
     public static int DEFAULT_COLOUR = 894731;
     private static final ExecutorService TEXTURE_CREATION_EXECUTOR = Executors.newFixedThreadPool(5, new ThreadFactoryBuilder().setNameFormat("resourcefulcreepers-texture_creation-%d").build());
     public static final ExecutorService REGISTER_THREAD_BECAUSE_FORGE_IS_DUMB = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("resourcefulcreepers-mob_creation-%d").build());
@@ -61,9 +56,9 @@ public class ResourcefulCreepers
             LOGGER.info("Creating config folder at " + Constants.CONFIG_FOLDER);
             Constants.CONFIG_FOLDER.toFile().mkdirs();
         }
-        Config.init(Constants.CONFIG_FILE.toFile());
-
-        if(!Config.INSTANCE.disableSentry)
+        configBuilder = new ConfigBuilder(Constants.CONFIG_FILE.getFileName().toString(), Constants.CONFIG_FILE, ConfigDataRC.class);
+        configData = (ConfigDataRC) configBuilder.getConfigData();
+        if(!configData.disableSentry)
         {
             Sentry.init(options ->
             {
@@ -84,11 +79,11 @@ public class ResourcefulCreepers
 
         try
         {
-            if (!Config.INSTANCE.generateDefaultTypes && !Constants.CREEPER_TYPES_CONFIG.toFile().exists())
+            if (!configData.generateDefaultTypes && !Constants.CREEPER_TYPES_CONFIG.toFile().exists())
             {
                 LOGGER.info("creeper_types.json does not exist, Creating new file using the ores tag");
-                Config.INSTANCE.autoGenerateCreeperTypesFromOreTags = true;
-                Config.saveConfigToFile(Constants.CONFIG_FILE.toFile());
+                configData.autoGenerateCreeperTypesFromOreTags = true;
+                configBuilder.save();
             }
             CreeperTypeList.init(Constants.CREEPER_TYPES_CONFIG.toFile());
             List<String> names = new ArrayList<>();
@@ -126,11 +121,11 @@ public class ResourcefulCreepers
             {
                 ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world ->
                 {
-                    if (Config.INSTANCE.autoGenerateCreeperTypesFromOreTags)
+                    if (configData.autoGenerateCreeperTypesFromOreTags)
                     {
                         int amount = CreeperBuilder.generateFromOreTags();
-                        Config.INSTANCE.autoGenerateCreeperTypesFromOreTags = false;
-                        Config.saveConfigToFile(Constants.CONFIG_FILE.toFile());
+                        configData.autoGenerateCreeperTypesFromOreTags = false;
+                        configBuilder.save();
                         LOGGER.info("Finished creating new CreeperTypes, " + amount + " types have been created, A restart is needed for these changes to take effect");
                     }
 
@@ -199,13 +194,12 @@ public class ResourcefulCreepers
 
     private static boolean canSpawnBiome(BiomeProperties category)
     {
-        //TODO
         return true;
     }
 
     public static void generateDefaultTypes()
     {
-        if(Config.INSTANCE.generateDefaultTypes)
+        if(configData.generateDefaultTypes)
         {
             CreeperTypeList.INSTANCE.creeperTypes.clear();
 
@@ -221,8 +215,8 @@ public class ResourcefulCreepers
             CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("diamond_ore", "Diamond Creeper", 2, DEFAULT_COLOUR, -1,true, 20, 1, 4, false, 0, createSingleList("minecraft:diamond_ore", 1), defaultBiomes()));
             CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("emerald_ore", "Emerald Creeper", 2, DEFAULT_COLOUR, -1, true, 20, 1, 4, false, 0, createSingleList("minecraft:emerald_ore", 1), defaultBiomes()));
 
-            Config.INSTANCE.generateDefaultTypes = false;
-            Config.saveConfigToFile(Constants.CONFIG_FILE.toFile());
+            configData.generateDefaultTypes = false;
+            configBuilder.save();
             CreeperTypeList.updateFile();
         }
     }

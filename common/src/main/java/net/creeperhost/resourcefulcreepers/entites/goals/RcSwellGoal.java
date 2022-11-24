@@ -1,6 +1,5 @@
 package net.creeperhost.resourcefulcreepers.entites.goals;
 
-import net.creeperhost.resourcefulcreepers.config.Config;
 import net.creeperhost.resourcefulcreepers.entites.EntityResourcefulCreeper;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;

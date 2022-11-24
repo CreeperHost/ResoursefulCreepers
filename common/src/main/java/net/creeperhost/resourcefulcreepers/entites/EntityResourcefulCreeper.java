@@ -1,7 +1,6 @@
 package net.creeperhost.resourcefulcreepers.entites;
 
 import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
-import net.creeperhost.resourcefulcreepers.config.Config;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.entites.goals.RcSwellGoal;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
@@ -120,7 +119,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
-        if(Config.INSTANCE.creepersAttractedToArmourStand) this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, ArmorStand.class, true));
+        if(ResourcefulCreepers.configData.creepersAttractedToArmourStand) this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, ArmorStand.class, true));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
     }
 
@@ -141,7 +140,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     {
         if (this.isAlive())
         {
-            if(Config.INSTANCE.nonHostileWhenTamed && this.isTamed() && this.getTarget() != null && this.getTarget() instanceof Player)
+            if(ResourcefulCreepers.configData.nonHostileWhenTamed && this.isTamed() && this.getTarget() != null && this.getTarget() instanceof Player)
             {
                 this.setTarget(null);
             }
@@ -176,16 +175,16 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
 
     public boolean shouldExplode()
     {
-        if(Config.INSTANCE.nonHostileWhenTamed && isTamed()) return false;
+        if(ResourcefulCreepers.configData.nonHostileWhenTamed && isTamed()) return false;
 
         return true;
     }
 
     private void explodeCreeper()
     {
-        if (Config.INSTANCE.explosionsGenerateOres)
+        if (ResourcefulCreepers.configData.explosionsGenerateOres)
         {
-            float f = this.isPowered() ? Config.INSTANCE.poweredExplosionMultiplier : Config.INSTANCE.explosionMultiplier;
+            float f = this.isPowered() ? ResourcefulCreepers.configData.poweredExplosionMultiplier : ResourcefulCreepers.configData.explosionMultiplier;
             this.dead = true;
             if(isBaby()) f = f / 2;
             double x = getX();
@@ -211,7 +210,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             {
                 for (BlockPos blockPos : explosion.getToBlow())
                 {
-                    if (Config.INSTANCE.forceAirBlock && level.getBlockState(blockPos).getBlock() == Blocks.AIR || level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).is(BlockTags.REPLACEABLE_PLANTS) || level.getBlockState(blockPos).is(BlockTags.SNOW))
+                    if (ResourcefulCreepers.configData.forceAirBlock && level.getBlockState(blockPos).getBlock() == Blocks.AIR || level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).is(BlockTags.REPLACEABLE_PLANTS) || level.getBlockState(blockPos).is(BlockTags.SNOW))
                     {
                         level.setBlock(blockPos, block.defaultBlockState(), 3);
                     }
@@ -285,9 +284,9 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
 
         boolean autoMated = isAutomated(damageSource);
         int random = level.getRandom().nextInt(0, 100);
-        boolean failed = random <= Config.INSTANCE.noDropChance;
+        boolean failed = random <= ResourcefulCreepers.configData.noDropChance;
 
-        if(getCreeperType().shouldDropItemsOnDeath() && !Config.INSTANCE.overrideOreDrops)
+        if(getCreeperType().shouldDropItemsOnDeath() && !ResourcefulCreepers.configData.overrideOreDrops)
         {
             if(autoMated && failed) return;
 
@@ -296,7 +295,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
                 if(autoMated)
                 {
                     int current = itemStack.getCount();
-                    int nerfed = (int)(current * (Config.INSTANCE.nerfDropPercentage / 100.0f));
+                    int nerfed = (int)(current * (ResourcefulCreepers.configData.nerfDropPercentage / 100.0f));
                     //Always make sure we have at least one in the itemstack
                     itemStack.setCount(Math.min(1, nerfed));
                 }
@@ -311,7 +310,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     public boolean isAutomated(DamageSource damageSource)
     {
         //If the config option is off then we don't care if its automated or not
-        if(Config.INSTANCE.nerfDropsWhenAutomated) return false;
+        if(ResourcefulCreepers.configData.nerfDropsWhenAutomated) return false;
         if(damageSource.getEntity() == null) return true;
         if(damageSource.getEntity() instanceof Player) return false;
 
