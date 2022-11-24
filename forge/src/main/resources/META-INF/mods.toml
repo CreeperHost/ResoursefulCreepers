@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[41,)"
-#issueTrackerURL = ""
+issueTrackerURL = "https://github.com/CreeperHost/ResourcefulCreepers/issues"
 license = "Insert License Here"
 
 [[mods]]
@@ -31,5 +31,12 @@ side = "BOTH"
 modId = "architectury"
 mandatory = true
 versionRange = "[5.5.16,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.resourcefulcreepers]]
+modId = "polylib"
+mandatory = true
+versionRange="[1900.0.2,)"
 ordering = "AFTER"
 side = "BOTH"
