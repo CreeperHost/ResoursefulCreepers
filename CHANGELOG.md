@@ -10,5 +10,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Don't add spawns if they are disabled
 - Some fixes to Spawn rules
 - Update Arch dependency
+- Creepers not using the spawn weight/group size from config
 ### Added 
 - CreeperTypes json now allows biomesTags list for handling spawns

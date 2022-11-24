@@ -161,7 +161,7 @@ public class ResourcefulCreepers
         try
         {
             BiomeModifications.addProperties(biomeContext -> canSpawnBiome(biomeContext.getProperties()), (biomeContext, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER,
-                    new MobSpawnSettings.SpawnerData(entityType.get(), 1, 4, creeperType.getSpawnWeight())));
+                    new MobSpawnSettings.SpawnerData(entityType.get(), creeperType.getMinGroup(), creeperType.getMaxGroup(), Math.max(10, creeperType.getSpawnWeight()))));
 
             SpawnPlacementsInvoker.callRegister(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, (entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource)
                     -> checkMonsterSpawnRules(entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
@@ -171,14 +171,20 @@ public class ResourcefulCreepers
     public static boolean checkMonsterSpawnRules(EntityType<?> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource, CreeperType creeperType) {
         if(!levelAccessor.getBlockState(blockPos.below()).is(BlockTags.VALID_SPAWN)) return false;
         if(isBrightEnoughToSpawn(levelAccessor, blockPos)) return false;
-        if(levelAccessor.dimensionType().natural()) return true;
 
-        for (String biomesTag : creeperType.getBiomesTags())
+        if(creeperType.getBiomesTags() != null && !creeperType.getBiomesTags().isEmpty())
         {
-            ResourceLocation resourceLocation = new ResourceLocation(biomesTag);
-            if(levelAccessor.getBiome(blockPos).is(resourceLocation))
+            for (String biomesTag : creeperType.getBiomesTags())
             {
-                return true;
+                if(biomesTag == null || biomesTag.isEmpty()) continue;
+
+                ResourceLocation resourceLocation = ResourceLocation.tryParse(biomesTag);
+                if(resourceLocation == null) continue;
+
+                if (levelAccessor.getBiome(blockPos) != null && levelAccessor.getBiome(blockPos).is(resourceLocation))
+                {
+                    return true;
+                }
             }
         }
 
