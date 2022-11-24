@@ -2,7 +2,6 @@ package net.creeperhost.resourcefulcreepers;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.creeperhost.resourcefulcreepers.entites.EntityResourcefulCreeper;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
@@ -13,7 +12,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 public class ResourcefulCreepersExpectPlatform
 {

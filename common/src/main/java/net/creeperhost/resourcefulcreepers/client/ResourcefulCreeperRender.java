@@ -5,14 +5,11 @@ import net.creeperhost.resourcefulcreepers.Constants;
 import net.creeperhost.resourcefulcreepers.entites.EntityResourcefulCreeper;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.monster.Creeper;
-import org.jetbrains.annotations.Nullable;
 
 public class ResourcefulCreeperRender extends MobRenderer<EntityResourcefulCreeper, ResourcefulCreeperModel<EntityResourcefulCreeper>> implements RenderLayerParent<EntityResourcefulCreeper, ResourcefulCreeperModel<EntityResourcefulCreeper>>
 {

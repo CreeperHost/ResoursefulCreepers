@@ -1,25 +1,19 @@
 package net.creeperhost.resourcefulcreepers.util;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import dev.architectury.platform.Platform;
 import net.creeperhost.resourcefulcreepers.Constants;
 import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
 import net.creeperhost.resourcefulcreepers.client.ResourcefulCreeperClient;
 import net.creeperhost.resourcefulcreepers.client.ResourcefulCreeperRender;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
-import net.creeperhost.resourcefulcreepers.util.ColorHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.MipmapGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.item.ItemStack;
 
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TextureBuilder
 {

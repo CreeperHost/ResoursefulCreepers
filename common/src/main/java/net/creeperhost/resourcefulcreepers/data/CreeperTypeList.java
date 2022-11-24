@@ -3,7 +3,6 @@ package net.creeperhost.resourcefulcreepers.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.creeperhost.resourcefulcreepers.Constants;
-import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;

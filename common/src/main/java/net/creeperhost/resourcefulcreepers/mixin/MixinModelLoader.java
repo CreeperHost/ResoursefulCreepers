@@ -1,7 +1,6 @@
 package net.creeperhost.resourcefulcreepers.mixin;
 
 import net.creeperhost.resourcefulcreepers.Constants;
-import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.model.UnbakedModel;

@@ -1,8 +1,6 @@
 package net.creeperhost.resourcefulcreepers.entites.goals;
 
-import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.entites.EntityResourcefulCreeper;
-import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
