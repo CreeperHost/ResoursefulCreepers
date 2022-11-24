@@ -82,7 +82,7 @@ public class ModEntities
                }
            }));
 
-           ResourcefulCreepers.addSpawn(() -> CREEPERS.get(creeperType).get());
+           if(creeperType.allowNaturalSpawns()) ResourcefulCreepers.addSpawn(() -> CREEPERS.get(creeperType).get());
        }
     });
 
