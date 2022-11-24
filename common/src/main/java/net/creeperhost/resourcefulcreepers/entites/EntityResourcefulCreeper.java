@@ -40,6 +40,7 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -278,12 +279,18 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     }
 
     @Override
-    public void dropCustomDeathLoot(DamageSource damageSource, int i, boolean bl)
+    public void dropCustomDeathLoot(@NotNull DamageSource damageSource, int i, boolean bl)
     {
         super.dropCustomDeathLoot(damageSource, i, bl);
 
+        boolean autoMated = isAutomated(damageSource);
+        int random = level.getRandom().nextInt(2);
+        boolean failed = random == 1;
+
         if(getCreeperType().shouldDropItemsOnDeath() && !Config.INSTANCE.overrideOreDrops)
         {
+            if(autoMated && failed) return;
+
             for (ItemStack itemStack : getCreeperType().getItemDropsAsList())
             {
                 if (itemStack != null && !itemStack.isEmpty())
@@ -292,6 +299,14 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
                 }
             }
         }
+    }
+
+    public boolean isAutomated(DamageSource damageSource)
+    {
+        if(damageSource.getEntity() == null) return true;
+        if(damageSource.getEntity() instanceof Player) return false;
+
+        return true;
     }
 
     @Override
