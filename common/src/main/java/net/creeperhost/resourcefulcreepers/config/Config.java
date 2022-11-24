@@ -24,6 +24,7 @@ public class Config
     public boolean disableSentry;
     public boolean nonHostileWhenTamed;
     public boolean forceAirBlock;
+    public boolean nerfDropsWhenAutomated;
 
     public Config()
     {
@@ -37,6 +38,7 @@ public class Config
         disableSentry = false;
         nonHostileWhenTamed = false;
         forceAirBlock = false;
+        nerfDropsWhenAutomated = false;
     }
 
     public static String saveConfig()

@@ -303,6 +303,8 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
 
     public boolean isAutomated(DamageSource damageSource)
     {
+        //If the config option is off then we don't care if its automated or not
+        if(Config.INSTANCE.nerfDropsWhenAutomated) return false;
         if(damageSource.getEntity() == null) return true;
         if(damageSource.getEntity() instanceof Player) return false;
 
