@@ -18,11 +18,16 @@ public class CreeperType
     private final int spawnEggColour2;
     private final boolean dropItemsOnDeath;
     private final int spawnWeight;
+    private final int minGroup;
+    private final int maxGroup;
     private final boolean allowNaturalSpawns;
     private final double armourValue;
     private final List<ItemDrop> itemDrops;
 
-    public CreeperType(String name, String displayName, int tier, int spawnEggColour1, int spawnEggColour2, boolean dropItemsOnDeath, int spawnWeight, boolean allowNaturalSpawns, double armourValue, List<ItemDrop> itemDrops)
+    private final List<String> biomesTags;
+
+    public CreeperType(String name, String displayName, int tier, int spawnEggColour1, int spawnEggColour2, boolean dropItemsOnDeath, int spawnWeight, int minGroup, int maxGroup,
+                       boolean allowNaturalSpawns, double armourValue, List<ItemDrop> itemDrops, List<String> biomesTags)
     {
         this.name = name;
         this.displayName = displayName;
@@ -31,9 +36,12 @@ public class CreeperType
         this.spawnEggColour2 = spawnEggColour2;
         this.dropItemsOnDeath = dropItemsOnDeath;
         this.spawnWeight = spawnWeight;
+        this.minGroup = minGroup;
+        this.maxGroup = maxGroup;
         this.allowNaturalSpawns = allowNaturalSpawns;
         this.armourValue = armourValue;
         this.itemDrops = itemDrops;
+        this.biomesTags = biomesTags;
     }
 
     public String getName()
@@ -98,5 +106,20 @@ public class CreeperType
             }
         }
         return itemStacks;
+    }
+
+    public int getMinGroup()
+    {
+        return minGroup;
+    }
+
+    public int getMaxGroup()
+    {
+        return maxGroup;
+    }
+
+    public List<String> getBiomesTags()
+    {
+        return biomesTags;
     }
 }

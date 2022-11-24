@@ -70,8 +70,8 @@ public class CreeperBuilder
             }
 
             CreeperType creeperType = new CreeperType(name.getPath(), aDefault.getName().getString(), tier, ResourcefulCreepers.DEFAULT_COLOUR,
-                    ColorHelper.getRandomColour(new ItemStack(aDefault)), true, oreGenData.getWeight(), true,
-                    aDefault.defaultDestroyTime(), ResourcefulCreepers.createSingleList(name.toString(), 1));
+                    ColorHelper.getRandomColour(new ItemStack(aDefault)), true, oreGenData.getWeight(), 1,4, true,
+                    aDefault.defaultDestroyTime(), ResourcefulCreepers.createSingleList(name.toString(), 1), ResourcefulCreepers.defaultBiomes());
 
             CreeperTypeList.INSTANCE.creeperTypes.add(creeperType);
             amount++;

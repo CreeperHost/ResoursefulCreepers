@@ -17,7 +17,12 @@ import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.fabricmc.api.EnvType;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
@@ -25,9 +30,12 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,7 +140,7 @@ public class ResourcefulCreepers
                         {
                             try
                             {
-                                System.out.println("Running texture builder for " + creeperType.getName());
+                                LOGGER.info("Running texture builder for {}", creeperType.getName());
                                 CompletableFuture.runAsync(() -> TextureBuilder.createCreeperTexture(creeperType), TEXTURE_CREATION_EXECUTOR);
                             } catch (Exception e)
                             {
@@ -146,23 +154,41 @@ public class ResourcefulCreepers
         {
             Sentry.captureException(e);
         }
-
-
     }
 
-    public static void addSpawn(Supplier<EntityType<?>> entityType)
+    public static void addSpawn(Supplier<EntityType<?>> entityType, CreeperType creeperType)
     {
         try
         {
             BiomeModifications.addProperties(biomeContext -> canSpawnBiome(biomeContext.getProperties()), (biomeContext, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER,
-                    new MobSpawnSettings.SpawnerData(entityType.get(), 4, 4, 10)));
+                    new MobSpawnSettings.SpawnerData(entityType.get(), 1, 4, creeperType.getSpawnWeight())));
 
-            SpawnPlacementsInvoker.callRegister(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, ResourcefulCreepers::checkMonsterSpawnRules);
+            SpawnPlacementsInvoker.callRegister(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, (entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource)
+                    -> checkMonsterSpawnRules(entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
         } catch (Exception ignored) {}
     }
 
-    public static boolean checkMonsterSpawnRules(EntityType<? extends Monster> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
-        return true;
+    public static boolean checkMonsterSpawnRules(EntityType<?> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource, CreeperType creeperType) {
+        if(!levelAccessor.getBlockState(blockPos.below()).is(BlockTags.VALID_SPAWN)) return false;
+        if(isBrightEnoughToSpawn(levelAccessor, blockPos)) return false;
+        if(levelAccessor.dimensionType().natural()) return true;
+
+        for (String biomesTag : creeperType.getBiomesTags())
+        {
+            ResourceLocation resourceLocation = new ResourceLocation(biomesTag);
+            if(levelAccessor.getBiome(blockPos).is(resourceLocation))
+            {
+                return true;
+            }
+        }
+
+        //I might want to do more here at some point
+        return false;
+    }
+
+    public static boolean isBrightEnoughToSpawn(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos)
+    {
+        return blockAndTintGetter.getRawBrightness(blockPos, 0) > 2;
     }
 
     private static boolean canSpawnBiome(BiomeProperties category)
@@ -177,22 +203,38 @@ public class ResourcefulCreepers
         {
             CreeperTypeList.INSTANCE.creeperTypes.clear();
 
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("copper_ore", "Copper Creeper", 1, DEFAULT_COLOUR, -1, true, 10, true, 0, createSingleList("minecraft:copper_ore", 2)));
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("iron_ore", "Iron Creeper", 1, DEFAULT_COLOUR, -1, true, 10, true, 0, createSingleList("minecraft:iron_ore", 2)));
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("gold_ore", "Gold Creeper", 1,  DEFAULT_COLOUR, -1, true, 10, true, 0, createSingleList("minecraft:gold_ore", 2)));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("copper_ore", "Copper Creeper", 1, DEFAULT_COLOUR, -1, true, 10, 1, 4, true, 0, createSingleList("minecraft:copper_ore", 2), defaultBiomes()));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("iron_ore", "Iron Creeper", 1, DEFAULT_COLOUR, -1, true, 10, 1, 4, true, 0, createSingleList("minecraft:iron_ore", 2), defaultBiomes()));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("gold_ore", "Gold Creeper", 1,  DEFAULT_COLOUR, -1, true, 10, 1, 4, true, 0, createSingleList("minecraft:gold_ore", 2), defaultBiomes()));
 
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("coal_ore", "Coal Creeper", 1, DEFAULT_COLOUR, -1,true, 10, true, 0, createSingleList("minecraft:coal_ore", 3)));
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("redstone_ore", "Redstone Creeper",2, DEFAULT_COLOUR, -1,true, 10, true, 0, createSingleList("minecraft:redstone_ore", 3)));
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("lapis_ore", "Lapis Creeper", 1, DEFAULT_COLOUR, -1, true, 10, true, 0, createSingleList("minecraft:lapis_ore", 3)));
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("quartz_ore_creeper", "Quartz Creeper", 2, DEFAULT_COLOUR, -1, true, 10, true, 0, createSingleList("minecraft:nether_quartz_ore", 3)));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("coal_ore", "Coal Creeper", 1, DEFAULT_COLOUR, -1,true, 10, 1, 4,true, 0, createSingleList("minecraft:coal_ore", 3), defaultBiomes()));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("redstone_ore", "Redstone Creeper",2, DEFAULT_COLOUR, -1,true, 10, 1, 4, true, 0, createSingleList("minecraft:redstone_ore", 3), defaultBiomes()));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("lapis_ore", "Lapis Creeper", 1, DEFAULT_COLOUR, -1, true, 10, 1, 4,true, 0, createSingleList("minecraft:lapis_ore", 3), defaultBiomes()));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("quartz_ore_creeper", "Quartz Creeper", 2, DEFAULT_COLOUR, -1, true, 10, 1, 4, true, 0, createSingleList("minecraft:nether_quartz_ore", 3),netherBiomes()));
 
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("diamond_ore", "Diamond Creeper", 2, DEFAULT_COLOUR, -1,true, 20, false, 0, createSingleList("minecraft:diamond_ore", 1)));
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("emerald_ore", "Emerald Creeper", 2, DEFAULT_COLOUR, -1, true, 20, false, 0, createSingleList("minecraft:emerald_ore", 1)));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("diamond_ore", "Diamond Creeper", 2, DEFAULT_COLOUR, -1,true, 20, 1, 4, false, 0, createSingleList("minecraft:diamond_ore", 1), defaultBiomes()));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("emerald_ore", "Emerald Creeper", 2, DEFAULT_COLOUR, -1, true, 20, 1, 4, false, 0, createSingleList("minecraft:emerald_ore", 1), defaultBiomes()));
 
             Config.INSTANCE.generateDefaultTypes = false;
             Config.saveConfigToFile(Constants.CONFIG_FILE.toFile());
             CreeperTypeList.updateFile();
         }
+    }
+
+    public static List<String> defaultBiomes()
+    {
+        List<String> list = new ArrayList<>();
+        list.add(BiomeTags.IS_OVERWORLD.location().toString());
+
+        return list;
+    }
+
+    public static List<String> netherBiomes()
+    {
+        List<String> list = new ArrayList<>();
+        list.add(BiomeTags.IS_NETHER.location().toString());
+
+        return list;
     }
 
     public static List<ItemDrop> createSingleList(String name, int amount)
