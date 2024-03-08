@@ -62,7 +62,7 @@ public class ResourcefulCreepers
         {
             Sentry.init(options ->
             {
-                options.setDsn("https://dcbda43f2f2a4ef38f702798205092dd@sentry.creeperhost.net/5");
+                options.setDsn("https://9bf679b2950ef2c84b8b21794211ad46@sentry.crprh.st/7");
 
                 options.setTracesSampleRate(Platform.isDevelopmentEnvironment() ? 1.0 : 0.025);
                 options.setEnvironment(SharedConstants.getCurrentVersion().getName());
@@ -139,6 +139,7 @@ public class ResourcefulCreepers
                                 CompletableFuture.runAsync(() -> TextureBuilder.createCreeperTexture(creeperType), TEXTURE_CREATION_EXECUTOR);
                             } catch (Exception e)
                             {
+                                Sentry.captureException(e);
                                 e.printStackTrace();
                             }
                         }
