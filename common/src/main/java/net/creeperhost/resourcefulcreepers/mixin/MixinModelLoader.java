@@ -31,7 +31,7 @@ public abstract class MixinModelLoader
     {
         if(!resourceLocation.getNamespace().equalsIgnoreCase(Constants.MOD_ID)) return;
         if(this.unbakedCache.containsKey(resourceLocation)) return;
-        ModelResourceLocation modelResourceLocation = new ModelResourceLocation("minecraft:creeper_spawn_egg#inventory");
+        ModelResourceLocation modelResourceLocation = new ModelResourceLocation("minecraft", "creeper_spawn_egg", "inventory");
 
 
         UnbakedModel unbakedmodel = this.unbakedCache.get(MISSING_MODEL_LOCATION);

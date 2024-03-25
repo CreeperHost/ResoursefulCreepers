@@ -19,8 +19,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -43,6 +47,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 public class EntityResourcefulCreeper extends Animal implements PowerableMob
@@ -86,7 +92,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     @Override
     public Component getName()
     {
-        if(level.isClientSide && creeperType != null)
+        if(level().isClientSide && creeperType != null)
         {
             if(hasCustomName())
             {
@@ -164,7 +170,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             {
                 this.swell = 0;
             }
-            if (this.swell > this.maxSwell || level.isClientSide && this.swell >= this.maxSwell -1)
+            if (this.swell > this.maxSwell || level().isClientSide && this.swell >= this.maxSwell -1)
             {
                 this.swell = this.maxSwell;
                 this.explodeCreeper();
@@ -182,21 +188,22 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
 
     private void explodeCreeper()
     {
+        if (level().isClientSide) return;
         if (ResourcefulCreepers.configData.explosionsGenerateOres)
         {
-            float f = this.isPowered() ? ResourcefulCreepers.configData.poweredExplosionMultiplier : ResourcefulCreepers.configData.explosionMultiplier;
+            float blockRadMultiplier = this.isPowered() ? ResourcefulCreepers.configData.poweredExplosionMultiplier : ResourcefulCreepers.configData.explosionMultiplier;
+            float damageRadMultiplier = (this.isPowered() ? 2.0F : 1.0F) * ResourcefulCreepers.configData.explosionDamageRangeMultiplier;
             this.dead = true;
-            if(isBaby()) f = f / 2;
-            double x = getX();
-            double y = getY();
-            double z = getZ();
-
-            if(level.isClientSide)
-            {
-                this.level.playLocalSound(x, y, z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+            if(isBaby()) {
+                blockRadMultiplier /= 2;
+                damageRadMultiplier /= 2;
             }
-            Explosion explosion = new Explosion(this.level, this, x, y, z, (float) this.explosionRadius * f);
-            explosion.explode();
+
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * damageRadMultiplier, Level.ExplosionInteraction.NONE);
+
+            Explosion blockExplosion = level().explode(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * blockRadMultiplier, Level.ExplosionInteraction.MOB);
+            this.spawnLingeringCloud();
+
             Block block = Blocks.AIR;
             for (ItemStack itemStack : getCreeperType().getItemDropsAsList())
             {
@@ -206,25 +213,45 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
                     break;
                 }
             }
-            if(!level.isClientSide)
+            if(!level().isClientSide)
             {
-                for (BlockPos blockPos : explosion.getToBlow())
+                for (BlockPos blockPos : blockExplosion.getToBlow())
                 {
-                    if (ResourcefulCreepers.configData.forceAirBlock && level.getBlockState(blockPos).getBlock() == Blocks.AIR || level.getBlockState(blockPos).isAir() || level.getBlockState(blockPos).is(BlockTags.REPLACEABLE_PLANTS) || level.getBlockState(blockPos).is(BlockTags.SNOW))
+                    if (ResourcefulCreepers.configData.forceAirBlock && level().getBlockState(blockPos).getBlock() == Blocks.AIR || level().getBlockState(blockPos).isAir() || level().getBlockState(blockPos).is(BlockTags.REPLACEABLE) || level().getBlockState(blockPos).is(BlockTags.SNOW))
                     {
-                        level.setBlock(blockPos, block.defaultBlockState(), 3);
+                        level().setBlock(blockPos, block.defaultBlockState(), 3);
                     }
                 }
             }
             this.discard();
-        } else
-        {
-            Explosion.BlockInteraction blockInteraction = this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.NONE;
-            float f = this.isPowered() ? 2.0f : 1.0f;
+        } else {
+            float f = this.isPowered() ? 2.0F : 1.0F;
             this.dead = true;
-            this.level.explode(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, blockInteraction);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, Level.ExplosionInteraction.MOB);
             this.discard();
+            this.spawnLingeringCloud();
         }
+    }
+
+    private void spawnLingeringCloud() {
+        Collection<MobEffectInstance> collection = this.getActiveEffects();
+        if (!collection.isEmpty()) {
+            AreaEffectCloud areaEffectCloud = new AreaEffectCloud(this.level(), this.getX(), this.getY(), this.getZ());
+            areaEffectCloud.setRadius(2.5F);
+            areaEffectCloud.setRadiusOnUse(-0.5F);
+            areaEffectCloud.setWaitTime(10);
+            areaEffectCloud.setDuration(areaEffectCloud.getDuration() / 2);
+            areaEffectCloud.setRadiusPerTick(-areaEffectCloud.getRadius() / (float)areaEffectCloud.getDuration());
+            Iterator var3 = collection.iterator();
+
+            while(var3.hasNext()) {
+                MobEffectInstance mobEffectInstance = (MobEffectInstance)var3.next();
+                areaEffectCloud.addEffect(new MobEffectInstance(mobEffectInstance));
+            }
+
+            this.level().addFreshEntity(areaEffectCloud);
+        }
+
     }
 
     public boolean isIgnited()
@@ -283,7 +310,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         super.dropCustomDeathLoot(damageSource, i, bl);
 
         boolean autoMated = isAutomated(damageSource);
-        int random = level.getRandom().nextInt(0, 100);
+        int random = level().getRandom().nextInt(0, 100);
         boolean failed = random <= ResourcefulCreepers.configData.noDropChance;
 
         if(getCreeperType().shouldDropItemsOnDeath() && !ResourcefulCreepers.configData.overrideOreDrops)
@@ -312,9 +339,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         //If the config option is off then we don't care if its automated or not
         if(ResourcefulCreepers.configData.nerfDropsWhenAutomated) return false;
         if(damageSource.getEntity() == null) return true;
-        if(damageSource.getEntity() instanceof Player) return false;
-
-        return true;
+        return !(damageSource.getEntity() instanceof Player);
     }
 
     @Override
@@ -357,7 +382,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         boolean mutation = serverLevel.random.nextInt(100) < 10;
         if(mutation)
         {
-            List<EntityType<?>> possible = getFromTier(nextTier, level);
+            List<EntityType<?>> possible = getFromTier(nextTier, level());
             if (!possible.isEmpty())
             {
                 int random = serverLevel.random.nextInt(possible.size());
@@ -401,19 +426,17 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
             if (serverLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
                 serverLevel.addFreshEntity(new ExperienceOrb(serverLevel, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
             }
-
         }
     }
 
     public List<EntityType<?>> getFromTier(int tier, Level level)
     {
         List<EntityType<?>> list = new ArrayList<>();
-        ModEntities.STORED_TYPES.forEach((entityType, integer) ->
-        {
-            EntityResourcefulCreeper creeper = (EntityResourcefulCreeper) entityType.create(level);
+        ModEntities.ENTITIES.forEach(supplier -> {
+            EntityResourcefulCreeper creeper = (EntityResourcefulCreeper) supplier.get().create(level);
             if(creeper.getCreeperType().getTier() == tier)
             {
-                list.add(entityType);
+                list.add(supplier.get());
             }
         });
 
@@ -517,5 +540,32 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     public boolean removeWhenFarAway(double d)
     {
         return true;
+    }
+
+    @Override
+    public void thunderHit(ServerLevel serverLevel, LightningBolt lightningBolt) {
+        super.thunderHit(serverLevel, lightningBolt);
+        this.entityData.set(DATA_IS_POWERED, true);
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand interactionHand) {
+        ItemStack itemStack = player.getItemInHand(interactionHand);
+        if (itemStack.is(ItemTags.CREEPER_IGNITERS)) {
+            SoundEvent soundEvent = itemStack.is(Items.FIRE_CHARGE) ? SoundEvents.FIRECHARGE_USE : SoundEvents.FLINTANDSTEEL_USE;
+            this.level().playSound(player, this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundSource(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+            if (!this.level().isClientSide) {
+                this.ignite();
+                if (!itemStack.isDamageableItem()) {
+                    itemStack.shrink(1);
+                } else {
+                    itemStack.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(interactionHand));
+                }
+            }
+
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        } else {
+            return super.mobInteract(player, interactionHand);
+        }
     }
 }

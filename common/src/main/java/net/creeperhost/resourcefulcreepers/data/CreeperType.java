@@ -1,6 +1,7 @@
 package net.creeperhost.resourcefulcreepers.data;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -99,8 +100,8 @@ public class CreeperType
         ArrayList<ItemStack> itemStacks = new ArrayList<>();
         for (ItemDrop itemDrop : getItemDrops())
         {
-            Item item = Registry.ITEM.get(new ResourceLocation(itemDrop.getName()));
-            if(item != null && item != Items.AIR)
+            Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(itemDrop.getName()));
+            if(item != Items.AIR)
             {
                 itemStacks.add(new ItemStack(item, itemDrop.getAmount()));
             }

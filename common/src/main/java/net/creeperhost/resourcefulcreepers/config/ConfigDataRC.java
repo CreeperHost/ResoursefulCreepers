@@ -7,8 +7,8 @@ public class ConfigDataRC extends ConfigData
 {
     @Comment("Generate default Creepers")
     public boolean generateDefaultTypes = true;
-    @Comment("Generate Creepers using the ORES tag")
-    public boolean autoGenerateCreeperTypesFromOreTags = false;
+//    @Comment("Generate Creepers using the ORES tag")
+//    public boolean autoGenerateCreeperTypesFromOreTags = false;
     @Comment("Explosion size multiplier, Used to increase the range of the Creepers explosion")
     public float explosionMultiplier = 0.25F;
     @Comment("Explosion size multiplier for Powered Creepers, Used to increase the range of the Creepers explosion")
@@ -31,4 +31,6 @@ public class ConfigDataRC extends ConfigData
     public int nerfDropPercentage = 20;
     @Comment("The percent chance of a automated drop not dropping anything")
     public int noDropChance = 20;
+    @Comment("The entity damage range of the creeper explosion, this does not effect blocks.")
+    public float explosionDamageRangeMultiplier = 1;
 }

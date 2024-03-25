@@ -41,6 +41,12 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
     implementation 'io.sentry:sentry:5.7.2'
     shadowCommon "io.sentry:sentry:5.7.2"
+
+    implementation('io.sentry:sentry:5.7.2') {
+        exclude group: 'com.google', module: 'gson'
+    }
+    shadowCommon("io.sentry:sentry:5.7.2") { transitive false }
+
 }
 
 processResources {
@@ -56,9 +62,7 @@ shadowJar {
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-//    dependencies {
-//        exclude(dependency("com.google.gson::"))
-//    }
+
     relocate 'io.sentry', 'net.creeperhost.resourcefulcreepers.io.sentry'
     classifier "dev-shadow"
 }

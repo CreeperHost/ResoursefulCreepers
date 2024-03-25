@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
@@ -55,7 +56,7 @@ public class ResourcefulCreepersExpectPlatformImpl
     public static List<Block> getDefaults()
     {
         TagKey<Block> tag = Tags.Blocks.ORES;
-        Iterable<Holder<Block>> i = Registry.BLOCK.getTagOrEmpty(tag);
+        Iterable<Holder<Block>> i = BuiltInRegistries.BLOCK.getTagOrEmpty(tag);
         List<Block> blockList = new ArrayList<>();
         for (Holder<Block> blockHolder : i)
         {
