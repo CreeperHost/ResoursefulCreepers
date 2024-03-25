@@ -2,24 +2,25 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
-architectury {
-    platformSetupLoomIde()
-    forge()
-}
-
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    mods {
+        forge {
+            sourceSet project(":forge").sourceSets.main
+        }
+    }
 
     forge {
         convertAccessWideners = true
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+        mixinConfig "resourcefulcreepers.mixins.json"
     }
 }
 
-loom {
-    forge {
-        mixinConfig "resourcefulcreepers.mixins.json"
-    }
+architectury {
+    platformSetupLoomIde()
+    forge()
 }
 
 configurations {
@@ -39,8 +40,6 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-    implementation 'io.sentry:sentry:5.7.2'
-    shadowCommon "io.sentry:sentry:5.7.2"
 
     implementation('io.sentry:sentry:5.7.2') {
         exclude group: 'com.google', module: 'gson'
@@ -64,18 +63,18 @@ shadowJar {
     configurations = [project.configurations.shadowCommon]
 
     relocate 'io.sentry', 'net.creeperhost.resourcefulcreepers.io.sentry'
-    classifier "dev-shadow"
+    archiveClassifier = "dev-shadow"
 }
 
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
     archiveBaseName.set "${rootProject.archives_base_name}-${project.name}-${rootProject.minecraft_version}"
-    classifier null
+    archiveClassifier = null
 }
 
 jar {
-    classifier "dev"
+    archiveClassifier = "dev"
 }
 
 sourcesJar {

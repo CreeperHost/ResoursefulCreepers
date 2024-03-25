@@ -1,3 +1,12 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.0.0"
+    id "maven-publish"
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/resourcefulcreepers.accesswidener")
+}
+
 dependencies {
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
@@ -32,12 +41,10 @@ compileJava {
 }
 
 architectury {
-    common()
+    common("fabric", "forge", "neoforge")
 }
 
-loom {
-    accessWidenerPath = file("src/main/resources/resourcefullcreepers.accesswidener")
-}
+
 
 publishing {
     publications {

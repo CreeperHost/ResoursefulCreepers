@@ -58,17 +58,10 @@ public class ModEntities {
                 }
             }));
 
-            if (creeperType.allowNaturalSpawns()) {
+            if (creeperType.allowNaturalSpawns() && !Platform.isNeoForge()) {
                 ResourcefulCreepers.LOGGER.info("registering spawn for {}", creeperType.getDisplayName());
                 ResourcefulCreepers.addSpawn(() -> CREEPERS.get(creeperType).get(), creeperType);
             }
-
-            //Register the entities attributes
-//            EntityAttributeRegistry.register(() -> CREEPERS.get(creeperType).get(), () -> EntityResourcefulCreeper.prepareAttributes(creeperType));
-            //Register the render
-//            if (Platform.getEnv() == EnvType.CLIENT) {
-//                EntityRendererRegistry.register(() -> CREEPERS.get(creeperType).get(), ResourcefulCreeperRender::new);
-//            }
         }
     }
 

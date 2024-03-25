@@ -1,10 +1,13 @@
 package net.creeperhost.resourcefulcreepers;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
-import dev.architectury.hooks.level.biome.BiomeProperties;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.level.biome.BiomeModifications;
+import dev.architectury.registry.level.entity.SpawnPlacementsRegistry;
 import dev.architectury.utils.Env;
 import io.sentry.Sentry;
 import net.creeperhost.polylib.config.ConfigBuilder;
@@ -13,7 +16,6 @@ import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.data.CreeperTypeList;
 import net.creeperhost.resourcefulcreepers.data.ItemDrop;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
-import net.creeperhost.resourcefulcreepers.mixin.SpawnPlacementsInvoker;
 import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
 import net.fabricmc.api.EnvType;
 import net.minecraft.SharedConstants;
@@ -22,19 +24,27 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -69,7 +79,7 @@ public class ResourcefulCreepers
                 options.setEnvironment(SharedConstants.getCurrentVersion().getName());
                 options.setRelease(Constants.MOD_VERSION);
                 options.setTag("commit", BuildInfo.version);
-                options.setTag("modloader", Platform.isForge() ? "Forge" : "Fabric");
+                options.setTag("modloader", Platform.isForgeLike() ? "Forge" : "Fabric");
                 options.setTag("ram", String.valueOf(((Runtime.getRuntime().maxMemory() / 1024) / 1024)));
                 options.setDist(System.getProperty("os.arch"));
                 options.setServerName(Platform.getEnv() == EnvType.CLIENT ? "integrated" : "dedicated");
@@ -155,49 +165,30 @@ public class ResourcefulCreepers
         }
     }
 
-    public static void addSpawn(Supplier<EntityType<?>> entityType, CreeperType creeperType)
+    public static <T extends Animal> void addSpawn(Supplier<EntityType<T>> entityType, CreeperType creeperType)
     {
         try
         {
-            BiomeModifications.addProperties(biomeContext -> canSpawnBiome(biomeContext.getProperties()), (biomeContext, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER,
-                    new MobSpawnSettings.SpawnerData(entityType.get(), creeperType.getMinGroup(), creeperType.getMaxGroup(), Math.max(10, creeperType.getSpawnWeight()))));
-
-            SpawnPlacementsInvoker.callRegister(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.WORLD_SURFACE, (entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource)
-                    -> checkMonsterSpawnRules(entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
+            List<TagKey<Biome>> biomes = creeperType.getBiomesTags().stream().map(e -> TagKey.create(Registries.BIOME, new ResourceLocation(e))).toList();
+            if (!Platform.isNeoForge()) {
+                BiomeModifications.addProperties(ctx -> biomes.stream().anyMatch(ctx::hasTag),
+                        (ctx, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(entityType.get(), creeperType.getMinGroup(), creeperType.getMaxGroup(), Math.max(10, creeperType.getSpawnWeight()))));
+            }
+            if (Platform.isFabric()) {
+                SpawnPlacementsRegistry.register(entityType, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource) -> checkMonsterSpawnRules(entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
+            } else {
+                SpawnPlacements.register(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource) -> checkMonsterSpawnRules(entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
+            }
         } catch (Exception ignored) {}
     }
 
+    //TODO This logic actually just never gets called when using architecturys BiomeModifications
     public static boolean checkMonsterSpawnRules(EntityType<?> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource, CreeperType creeperType) {
-        if(!levelAccessor.getBlockState(blockPos.below()).is(BlockTags.VALID_SPAWN)) return false;
-        if(isBrightEnoughToSpawn(levelAccessor, blockPos)) return false;
-
-        if(creeperType.getBiomesTags() != null && !creeperType.getBiomesTags().isEmpty())
-        {
-            for (String biomesTag : creeperType.getBiomesTags())
-            {
-                if(biomesTag == null || biomesTag.isEmpty()) continue;
-
-                ResourceLocation resourceLocation = ResourceLocation.tryParse(biomesTag);
-                if(resourceLocation == null) continue;
-
-                if (levelAccessor.getBiome(blockPos) != null && levelAccessor.getBiome(blockPos).is(resourceLocation))
-                {
-                    return true;
-                }
-            }
+        if (!levelAccessor.getBiome(blockPos).is(BiomeTags.IS_OVERWORLD)) {
+            return !levelAccessor.getBlockState(blockPos.below()).is(BlockTags.WART_BLOCKS);
         }
-
-        //I might want to do more here at some point
-        return false;
-    }
-
-    public static boolean isBrightEnoughToSpawn(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos)
-    {
-        return blockAndTintGetter.getRawBrightness(blockPos, 0) > 2;
-    }
-
-    private static boolean canSpawnBiome(BiomeProperties category)
-    {
+        if(!levelAccessor.getBlockState(blockPos.below()).is(BlockTags.VALID_SPAWN)) return false;
+        if(!Monster.isDarkEnoughToSpawn(levelAccessor, blockPos, randomSource)) return false;
         return true;
     }
 
@@ -223,13 +214,39 @@ public class ResourcefulCreepers
             configBuilder.save();
             CreeperTypeList.updateFile();
         }
+//        generateDataJsons();
+    }
+
+    //For In Dev use only
+    private static void generateDataJsons() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File dataDir = new File("[Workspace Location]/ResourcefulCreepers/neoforge/src/main/resources/data/resourcefulcreepers/neoforge/biome_modifier");
+        if (!dataDir.exists()) throw new IllegalStateException();
+
+        CreeperTypeList.INSTANCE.creeperTypes.forEach(type -> {
+            JsonObject json = new JsonObject();
+            if (type.getBiomesTags().size() != 1) throw new IllegalStateException();
+            json.addProperty("type", "neoforge:add_spawns");
+            json.addProperty("biomes", "#" + type.getBiomesTags().get(0));
+            JsonObject spawners = new JsonObject();
+            spawners.addProperty("type", Constants.MOD_ID + ":" + type.getName());
+            spawners.addProperty("maxCount", type.getMaxGroup());
+            spawners.addProperty("minCount", type.getMinGroup());
+            spawners.addProperty("weight", type.getSpawnWeight());
+            json.add("spawners", spawners);
+
+            try (FileWriter writer = new FileWriter(new File(dataDir, type.getName() + "_spawn.json"))){
+                gson.toJson(json, writer);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public static List<String> defaultBiomes()
     {
         List<String> list = new ArrayList<>();
         list.add(BiomeTags.IS_OVERWORLD.location().toString());
-
         return list;
     }
 
@@ -237,7 +254,6 @@ public class ResourcefulCreepers
     {
         List<String> list = new ArrayList<>();
         list.add(BiomeTags.IS_NETHER.location().toString());
-
         return list;
     }
 

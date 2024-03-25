@@ -4,11 +4,9 @@ plugins {
 
 architectury {
     platformSetupLoomIde()
-    fabric()
-}
-
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
+    neoForge {
+        platformPackage = "neoforge"
+    }
 }
 
 configurations {
@@ -16,49 +14,50 @@ configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
+    developmentNeoForge.extendsFrom common
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
-    modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
-    modApi("net.creeperhost:polylib-fabric:${rootProject.polylib_version}")
+    neoForge("net.neoforged:neoforge:${rootProject.neoforge_version}")
+    // Remove the next line if you don't want to depend on the API
+    modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_version}"
+    modApi("net.creeperhost:polylib-neoforge:${rootProject.polylib_version}")
+    forgeRuntimeLibrary('io.sentry:sentry:5.7.2')
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 
-    implementation('io.sentry:sentry:5.7.2')
+    implementation('io.sentry:sentry:5.7.2') {
+        exclude group: 'com.google', module: 'gson'
+    }
     shadowCommon("io.sentry:sentry:5.7.2") { transitive false }
+
 }
 
 processResources {
     inputs.property "version", project.version
 
-    filesMatching("fabric.mod.json") {
+    filesMatching("META-INF/mods.toml") {
         expand "version": project.version
     }
 }
 
 shadowJar {
+    exclude "fabric.mod.json"
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shadowCommon]
-    dependencies {
-        exclude(dependency("org.slf4j::"))
-        exclude(dependency("javax.transaction::"))
-    }
 
-    relocate 'io.sentry', 'net.creeperhost.polylib.io.sentry'
+    relocate 'io.sentry', 'net.creeperhost.resourcefulcreepers.io.sentry'
     archiveClassifier = "dev-shadow"
 }
 
 remapJar {
-    injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
     archiveBaseName.set "${rootProject.archives_base_name}-${project.name}-${rootProject.minecraft_version}"
     archiveClassifier = null
+    atAccessWideners.add('resourcefulcreepers.accesswidener')
 }
 
 jar {
@@ -79,7 +78,7 @@ components.java {
 
 publishing {
     publications {
-        mavenFabric(MavenPublication) {
+        mavenForge(MavenPublication) {
             artifactId = rootProject.archives_base_name + "-" + project.name
             from components.java
         }
