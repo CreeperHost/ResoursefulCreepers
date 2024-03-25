@@ -1,3 +1,5 @@
 {
-  "itemGroup.resourcefulcreepers.creative_tab": "Resourceful Creepers"
+  "itemGroup.resourcefulcreepers.creative_tab": "Resourceful Creepers",
+
+  "item.resourcefulcreepers.spawn_egg": "%s Spawn Egg"
 }

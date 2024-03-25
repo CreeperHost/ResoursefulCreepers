@@ -18,6 +18,7 @@ import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
 import net.fabricmc.api.EnvType;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
@@ -79,12 +80,13 @@ public class ResourcefulCreepers
 
         try
         {
-            if (!configData.generateDefaultTypes && !Constants.CREEPER_TYPES_CONFIG.toFile().exists())
-            {
-                LOGGER.info("creeper_types.json does not exist, Creating new file using the ores tag");
-                configData.autoGenerateCreeperTypesFromOreTags = true;
-                configBuilder.save();
-            }
+            //TODO Figure out creeper generation based on ores
+//            if (!configData.generateDefaultTypes && !Constants.CREEPER_TYPES_CONFIG.toFile().exists())
+//            {
+//                LOGGER.info("creeper_types.json does not exist, Creating new file using the ores tag");
+//                configData.autoGenerateCreeperTypesFromOreTags = true;
+//                configBuilder.save();
+//            }
             CreeperTypeList.init(Constants.CREEPER_TYPES_CONFIG.toFile());
             List<String> names = new ArrayList<>();
             List<CreeperType> dupes = new ArrayList<>();
@@ -121,13 +123,14 @@ public class ResourcefulCreepers
             {
                 ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world ->
                 {
-                    if (configData.autoGenerateCreeperTypesFromOreTags)
-                    {
-                        int amount = CreeperBuilder.generateFromOreTags();
-                        configData.autoGenerateCreeperTypesFromOreTags = false;
-                        configBuilder.save();
-                        LOGGER.info("Finished creating new CreeperTypes, " + amount + " types have been created, A restart is needed for these changes to take effect");
-                    }
+                    //TODO Figure out creeper generation based on ores
+//                    if (configData.autoGenerateCreeperTypesFromOreTags)
+//                    {
+//                        int amount = CreeperBuilder.generateFromOreTags();
+//                        configData.autoGenerateCreeperTypesFromOreTags = false;
+//                        configBuilder.save();
+//                        LOGGER.info("Finished creating new CreeperTypes, " + amount + " types have been created, A restart is needed for these changes to take effect");
+//                    }
 
                     if (CreeperTypeList.INSTANCE.creeperTypes != null && !CreeperTypeList.INSTANCE.creeperTypes.isEmpty())
                     {

@@ -1,7 +1,7 @@
 modLoader = "javafml"
-loaderVersion = "[41,)"
+loaderVersion = "[46,)"
 issueTrackerURL = "https://github.com/CreeperHost/ResourcefulCreepers/issues"
-license = "Insert License Here"
+license = "BSD 4-Clause License"
 
 [[mods]]
 modId = "resourcefulcreepers"
@@ -16,27 +16,27 @@ Backup all the things!
 [[dependencies.resourcefulcreepers]]
 modId = "forge"
 mandatory = true
-versionRange = "[41,)"
+versionRange = "[46,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.resourcefulcreepers]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19,)"
+versionRange = "[1.20, 1.20.1]"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.resourcefulcreepers]]
 modId = "architectury"
 mandatory = true
-versionRange = "[5.5.16,)"
+versionRange = "[9.0.7,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.resourcefulcreepers]]
 modId = "polylib"
 mandatory = true
-versionRange="[1900.0.2,)"
+versionRange = "[1200.0.3,)"
 ordering = "AFTER"
 side = "BOTH"

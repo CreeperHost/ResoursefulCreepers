@@ -8,14 +8,20 @@ import net.creeperhost.resourcefulcreepers.mixin.MixinHeightRangePlacement;
 import net.creeperhost.resourcefulcreepers.mixin.MixinTrapezoidHeight;
 import net.creeperhost.resourcefulcreepers.mixin.MixinUniformHeight;
 import net.creeperhost.resourcefulcreepers.util.ColorHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
@@ -44,7 +50,7 @@ public class CreeperBuilder
         int amount = 0;
         for (Block aDefault : defaults)
         {
-            ResourceLocation name = Registry.BLOCK.getKey(aDefault);
+            ResourceLocation name = BuiltInRegistries.BLOCK.getKey(aDefault);
             ResourceLocation empty = new ResourceLocation("empty");
             if(name == empty)
             {
@@ -82,57 +88,57 @@ public class CreeperBuilder
 
     public static void generateOreData()
     {
-        BuiltinRegistries.PLACED_FEATURE.forEach(configuredFeature ->
+        BuiltInRegistries.FEATURE.forEach(configuredFeature ->
         {
-            configuredFeature.getFeatures().forEach(configuredFeature1 ->
-            {
-                if(configuredFeature1.config() instanceof OreConfiguration oreConfiguration)
-                {
-                    AtomicInteger minWeight = new AtomicInteger();
-                    AtomicInteger minY = new AtomicInteger();
-                    AtomicInteger maxY = new AtomicInteger();
-
-                    configuredFeature.placement().forEach(placementModifier ->
-                    {
-                        if(placementModifier instanceof CountPlacement countPlacement)
-                        {
-                            IntProvider intProvider = ((MixinCountPlacement)countPlacement).getcount();
-                            minWeight.set(intProvider.getMaxValue());
-                        }
-                        if(placementModifier instanceof HeightRangePlacement heightRangePlacement)
-                        {
-                            HeightProvider heightProvider = ((MixinHeightRangePlacement)heightRangePlacement).getheight();
-                            if(heightProvider instanceof UniformHeight uniformHeight)
-                            {
-                                VerticalAnchor verticalAnchor = ((MixinUniformHeight) uniformHeight).getminInclusive();
-                                VerticalAnchor verticalAnchor2 = ((MixinUniformHeight) uniformHeight).getmaxInclusive();
-
-                                //TODO Requires more brain power to track down
-//                                int min = ((MixinVerticalAnchor)verticalAnchor).getvalue();
-//                                int max = ((MixinVerticalAnchor)verticalAnchor2).getvalue();
-                                minY.set(0);
-                                maxY.set(0);
-                            }
-                            if(heightProvider instanceof TrapezoidHeight trapezoidHeight)
-                            {
-                                VerticalAnchor verticalAnchor = ((MixinTrapezoidHeight) trapezoidHeight).getminInclusive();
-                                VerticalAnchor verticalAnchor2 = ((MixinTrapezoidHeight) trapezoidHeight).getmaxInclusive();
-
-                                //TODO Requires more brain power to track down
-//                                int min = ((MixinVerticalAnchor)verticalAnchor).getvalue();
-//                                int max = ((MixinVerticalAnchor)verticalAnchor2).getvalue();
-                                minY.set(0);
-                                maxY.set(0);
-                            }
-                        }
-                    });
-                    oreConfiguration.targetStates.forEach(targetBlockState ->
-                    {
-                        ResourceLocation name = Registry.BLOCK.getKey(targetBlockState.state.getBlock());
-                        ORE_DATA.put(name, new OreGenData(oreConfiguration.size, minWeight.get(), minY.get(), maxY.get()));
-                    });
-                }
-            });
+//            configuredFeature.getFeatures().forEach(configuredFeature1 ->
+//            {
+//                if(configuredFeature1.config() instanceof OreConfiguration oreConfiguration)
+//                {
+//                    AtomicInteger minWeight = new AtomicInteger();
+//                    AtomicInteger minY = new AtomicInteger();
+//                    AtomicInteger maxY = new AtomicInteger();
+//
+//                    configuredFeature.placement().forEach(placementModifier ->
+//                    {
+//                        if(placementModifier instanceof CountPlacement countPlacement)
+//                        {
+//                            IntProvider intProvider = ((MixinCountPlacement)countPlacement).getcount();
+//                            minWeight.set(intProvider.getMaxValue());
+//                        }
+//                        if(placementModifier instanceof HeightRangePlacement heightRangePlacement)
+//                        {
+//                            HeightProvider heightProvider = ((MixinHeightRangePlacement)heightRangePlacement).getheight();
+//                            if(heightProvider instanceof UniformHeight uniformHeight)
+//                            {
+//                                VerticalAnchor verticalAnchor = ((MixinUniformHeight) uniformHeight).getminInclusive();
+//                                VerticalAnchor verticalAnchor2 = ((MixinUniformHeight) uniformHeight).getmaxInclusive();
+//
+//                                //TODO Requires more brain power to track down
+////                                int min = ((MixinVerticalAnchor)verticalAnchor).getvalue();
+////                                int max = ((MixinVerticalAnchor)verticalAnchor2).getvalue();
+//                                minY.set(0);
+//                                maxY.set(0);
+//                            }
+//                            if(heightProvider instanceof TrapezoidHeight trapezoidHeight)
+//                            {
+//                                VerticalAnchor verticalAnchor = ((MixinTrapezoidHeight) trapezoidHeight).getminInclusive();
+//                                VerticalAnchor verticalAnchor2 = ((MixinTrapezoidHeight) trapezoidHeight).getmaxInclusive();
+//
+//                                //TODO Requires more brain power to track down
+////                                int min = ((MixinVerticalAnchor)verticalAnchor).getvalue();
+////                                int max = ((MixinVerticalAnchor)verticalAnchor2).getvalue();
+//                                minY.set(0);
+//                                maxY.set(0);
+//                            }
+//                        }
+//                    });
+//                    oreConfiguration.targetStates.forEach(targetBlockState ->
+//                    {
+//                        ResourceLocation name = Registry.BLOCK.getKey(targetBlockState.state.getBlock());
+//                        ORE_DATA.put(name, new OreGenData(oreConfiguration.size, minWeight.get(), minY.get(), maxY.get()));
+//                    });
+//                }
+//            });
         });
     }
 

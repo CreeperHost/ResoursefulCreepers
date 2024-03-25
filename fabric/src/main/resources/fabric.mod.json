@@ -11,7 +11,7 @@
     "homepage": "",
     "sources": ""
   },
-  "license": "Insert License Here",
+  "license": "BSD 4-Clause License",
   "icon": "assets/resourcefulcreepers/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -21,8 +21,9 @@
   },
   "depends": {
     "fabric": "*",
-    "minecraft": ">=1.19",
-    "architectury": ">=5.5.16"
+    "minecraft": ">=1.20",
+    "architectury": ">=9.0.7",
+    "polylib": ">=2000.0.3-build.132"
   },
   "suggests": {
     "flamingo": "*"
