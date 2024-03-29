@@ -39,8 +39,6 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-    implementation 'io.sentry:sentry:5.7.2'
-    shadowCommon "io.sentry:sentry:5.7.2"
 
     implementation('io.sentry:sentry:5.7.2') {
         exclude group: 'com.google', module: 'gson'
