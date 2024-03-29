@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[49,)"
+loaderVersion = "[2,)"
 issueTrackerURL = "https://github.com/CreeperHost/ResourcefulCreepers/issues"
 license = "BSD 4-Clause License"
 
@@ -14,16 +14,16 @@ Backup all the things!
 #logoFile = ""
 
 [[dependencies.resourcefulcreepers]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
-versionRange = "[49,)"
+versionRange = "[20,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.resourcefulcreepers]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20.4,1.21)"
+versionRange = "[1.20.4,)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -40,3 +40,6 @@ mandatory = true
 versionRange = "[2004.0.3,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[mixins]]
+config = "resourcefulcreepers.mixins.json"
