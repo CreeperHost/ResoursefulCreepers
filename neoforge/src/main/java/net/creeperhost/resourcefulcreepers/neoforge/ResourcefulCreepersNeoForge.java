@@ -26,11 +26,6 @@ public class ResourcefulCreepersNeoForge {
     }
 
     private void commonLoaded(final FMLCommonSetupEvent event) {
-        for (CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes) {
-            if (creeperType.allowNaturalSpawns()) {
-                ResourcefulCreepers.LOGGER.info("registering spawn for {}", creeperType.getDisplayName());
-                ResourcefulCreepers.addSpawn(() -> ModEntities.CREEPERS.get(creeperType).get(), creeperType);
-            }
-        }
+        ModEntities.registerSpawns();
     }
 }

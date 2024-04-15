@@ -7,19 +7,28 @@ import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import net.creeperhost.resourcefulcreepers.Constants;
 import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
+import net.creeperhost.resourcefulcreepers.ResourcefulCreepersPlatform;
 import net.creeperhost.resourcefulcreepers.client.ResourcefulCreeperRender;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.data.CreeperTypeList;
 import net.creeperhost.resourcefulcreepers.entites.EntityResourcefulCreeper;
 import net.creeperhost.resourcefulcreepers.items.CreeperSpawnEgg;
 import net.fabricmc.api.EnvType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ServerLevelAccessor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -57,10 +66,20 @@ public class ModEntities {
                     return Component.translatable("item.resourcefulcreepers.spawn_egg", creeperType.getDisplayName());
                 }
             }));
+        }
+    }
 
-            if (creeperType.allowNaturalSpawns() && !Platform.isNeoForge()) {
-                ResourcefulCreepers.LOGGER.info("registering spawn for {}", creeperType.getDisplayName());
-                ResourcefulCreepers.addSpawn(() -> CREEPERS.get(creeperType).get(), creeperType);
+    public static boolean checkMonsterSpawnRules(EntityType<?> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource, CreeperType creeperType) {
+        if (levelAccessor.getDifficulty() == Difficulty.PEACEFUL) return false;
+        if (!levelAccessor.getBlockState(blockPos.below()).isValidSpawn(levelAccessor, blockPos.below(), entityType)) return false;
+        return !Monster.isDarkEnoughToSpawn(levelAccessor, blockPos, randomSource);
+    }
+
+    public static void registerSpawns() {
+        for (CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes) {
+            if (creeperType.allowNaturalSpawns()) {
+                ResourcefulCreepers.LOGGER.info("registering spawn for {}", creeperType.getDisplayName());;
+                ResourcefulCreepersPlatform.addSpawn(() -> CREEPERS.get(creeperType).get(), creeperType);
             }
         }
     }
