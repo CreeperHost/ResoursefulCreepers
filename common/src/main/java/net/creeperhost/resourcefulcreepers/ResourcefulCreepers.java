@@ -27,6 +27,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
@@ -154,31 +155,6 @@ public class ResourcefulCreepers
         {
             Sentry.captureException(e);
         }
-    }
-
-    public static <T extends Animal> void addSpawn(Supplier<EntityType<T>> entityType, CreeperType creeperType)
-    {
-        try
-        {
-            List<TagKey<Biome>> biomes = creeperType.getBiomesTags().stream().map(e -> TagKey.create(Registries.BIOME, new ResourceLocation(e))).toList();
-            BiomeModifications.addProperties(ctx -> biomes.stream().anyMatch(ctx::hasTag),
-                    (ctx, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(entityType.get(), creeperType.getMinGroup(), creeperType.getMaxGroup(), Math.max(10, creeperType.getSpawnWeight()))));
-
-            SpawnPlacements.register(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource) -> checkMonsterSpawnRules(entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
-        } catch (Exception ignored) {}
-    }
-
-    //TODO This logic actually just never gets called when using architecturys BiomeModifications
-    public static boolean checkMonsterSpawnRules(EntityType<?> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource, CreeperType creeperType) {
-        if(!levelAccessor.getBlockState(blockPos.below()).is(BlockTags.VALID_SPAWN)) return false;
-        if (!levelAccessor.getBlockState(blockPos.below()).isValidSpawn(levelAccessor, blockPos.below(), entityType)) return false;
-        if(isBrightEnoughToSpawn(levelAccessor, blockPos)) return false;
-        return true;
-    }
-
-    public static boolean isBrightEnoughToSpawn(BlockAndTintGetter blockAndTintGetter, BlockPos blockPos)
-    {
-        return blockAndTintGetter.getRawBrightness(blockPos, 0) > 2;
     }
 
     public static void generateDefaultTypes()

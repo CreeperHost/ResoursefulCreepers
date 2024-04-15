@@ -3,36 +3,16 @@ package net.creeperhost.resourcefulcreepers;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.data.CreeperTypeList;
 import net.creeperhost.resourcefulcreepers.data.OreGenData;
-import net.creeperhost.resourcefulcreepers.mixin.MixinCountPlacement;
-import net.creeperhost.resourcefulcreepers.mixin.MixinHeightRangePlacement;
-import net.creeperhost.resourcefulcreepers.mixin.MixinTrapezoidHeight;
-import net.creeperhost.resourcefulcreepers.mixin.MixinUniformHeight;
 import net.creeperhost.resourcefulcreepers.util.ColorHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.levelgen.VerticalAnchor;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
-import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
-import net.minecraft.world.level.levelgen.heightproviders.TrapezoidHeight;
-import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
-import net.minecraft.world.level.levelgen.placement.CountPlacement;
-import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class CreeperBuilder
 {
@@ -42,11 +22,11 @@ public class CreeperBuilder
     public static int generateFromOreTags()
     {
         generateOreData();
-        MAX_TIER = ResourcefulCreepersExpectPlatform.getTierList().size();
+        MAX_TIER = ResourcefulCreepersPlatform.getTierList().size();
 
         //Clear out the old list
         CreeperTypeList.INSTANCE.creeperTypes.clear();
-        List<Block> defaults = ResourcefulCreepersExpectPlatform.getDefaults();
+        List<Block> defaults = ResourcefulCreepersPlatform.getDefaults();
         int amount = 0;
         for (Block aDefault : defaults)
         {
@@ -144,10 +124,10 @@ public class CreeperBuilder
 
     public static int calculateTier(BlockState blockState)
     {
-        List<Tier> tierList = ResourcefulCreepersExpectPlatform.getTierList();
+        List<Tier> tierList = ResourcefulCreepersPlatform.getTierList();
         for (Tier tier : tierList)
         {
-            if(ResourcefulCreepersExpectPlatform.isCorrectTierForDrops(tier, blockState))
+            if(ResourcefulCreepersPlatform.isCorrectTierForDrops(tier, blockState))
             {
                 return tier.getLevel();
             }

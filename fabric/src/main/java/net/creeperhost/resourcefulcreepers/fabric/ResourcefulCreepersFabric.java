@@ -1,6 +1,7 @@
 package net.creeperhost.resourcefulcreepers.fabric;
 
 import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
+import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.minecraft.world.entity.EntityType;
@@ -14,5 +15,6 @@ public class ResourcefulCreepersFabric implements ModInitializer
     public void onInitialize()
     {
         ResourcefulCreepers.init();
+        ModEntities.registerSpawns();
     }
 }
