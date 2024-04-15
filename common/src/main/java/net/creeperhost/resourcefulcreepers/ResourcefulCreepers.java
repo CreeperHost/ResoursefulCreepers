@@ -165,33 +165,6 @@ public class ResourcefulCreepers
         }
     }
 
-    public static <T extends Animal> void addSpawn(Supplier<EntityType<T>> entityType, CreeperType creeperType)
-    {
-        try
-        {
-            List<TagKey<Biome>> biomes = creeperType.getBiomesTags().stream().map(e -> TagKey.create(Registries.BIOME, new ResourceLocation(e))).toList();
-            if (!Platform.isNeoForge()) {
-                BiomeModifications.addProperties(ctx -> biomes.stream().anyMatch(ctx::hasTag),
-                        (ctx, mutable) -> mutable.getSpawnProperties().addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(entityType.get(), creeperType.getMinGroup(), creeperType.getMaxGroup(), Math.max(10, creeperType.getSpawnWeight()))));
-            }
-            if (Platform.isFabric()) {
-                SpawnPlacementsRegistry.register(entityType, SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource) -> checkMonsterSpawnRules(entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
-            } else {
-                SpawnPlacements.register(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource) -> checkMonsterSpawnRules(entityType1, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
-            }
-        } catch (Exception ignored) {}
-    }
-
-    //TODO This logic actually just never gets called when using architecturys BiomeModifications
-    public static boolean checkMonsterSpawnRules(EntityType<?> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource, CreeperType creeperType) {
-        if (!levelAccessor.getBiome(blockPos).is(BiomeTags.IS_OVERWORLD)) {
-            return !levelAccessor.getBlockState(blockPos.below()).is(BlockTags.WART_BLOCKS);
-        }
-        if(!levelAccessor.getBlockState(blockPos.below()).is(BlockTags.VALID_SPAWN)) return false;
-        if(!Monster.isDarkEnoughToSpawn(levelAccessor, blockPos, randomSource)) return false;
-        return true;
-    }
-
     public static void generateDefaultTypes()
     {
         if(configData.generateDefaultTypes)
