@@ -100,7 +100,7 @@ public class CreeperType
         ArrayList<ItemStack> itemStacks = new ArrayList<>();
         for (ItemDrop itemDrop : getItemDrops())
         {
-            Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(itemDrop.getName()));
+            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemDrop.getName()));
             if(item != Items.AIR)
             {
                 itemStacks.add(new ItemStack(item, itemDrop.getAmount()));

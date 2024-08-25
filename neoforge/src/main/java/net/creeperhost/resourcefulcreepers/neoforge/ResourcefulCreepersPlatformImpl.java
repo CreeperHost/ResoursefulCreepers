@@ -9,10 +9,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
@@ -22,7 +19,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.TierSortingRegistry;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -58,17 +54,13 @@ public class ResourcefulCreepersPlatformImpl
         return 0;
     }
 
-    public static List<Tier> getTierList()
-    {
-        return TierSortingRegistry.getSortedTiers();
-    }
+//    public static List<Tier> getTierList()
+//    {
+//        return TierSortingRegistry.getSortedTiers();
+//    }
 
-    public static boolean isCorrectTierForDrops(Tier tier, BlockState blockState)
-    {
-        return TierSortingRegistry.isCorrectTierForDrops(tier, blockState);
-    }
-
-    public static <T extends Animal> void addSpawn(Supplier<EntityType<T>> entityType, CreeperType creeperType) {
-        SpawnPlacements.register(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, serverLevelAccessor, mobSpawnType, blockPos, randomSource) -> ModEntities.checkMonsterSpawnRules(type, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
-    }
+//    public static boolean isCorrectTierForDrops(Tier tier, BlockState blockState)
+//    {
+//        return TierSortingRegistry.isCorrectTierForDrops(tier, blockState);
+//    }
 }

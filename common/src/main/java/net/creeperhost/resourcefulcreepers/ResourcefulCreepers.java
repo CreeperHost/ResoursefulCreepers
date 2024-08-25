@@ -180,8 +180,8 @@ public class ResourcefulCreepers
             CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("lapis_ore", "Lapis Creeper", 1, DEFAULT_COLOUR, -1, true, 10, 1, 4,true, 0, createSingleList("minecraft:lapis_ore", 3), defaultBiomes()));
             CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("quartz_ore_creeper", "Quartz Creeper", 2, DEFAULT_COLOUR, -1, true, 10, 1, 4, true, 0, createSingleList("minecraft:nether_quartz_ore", 3),netherBiomes()));
 
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("diamond_ore", "Diamond Creeper", 2, DEFAULT_COLOUR, -1,true, 20, 1, 4, false, 0, createSingleList("minecraft:diamond_ore", 1), defaultBiomes()));
-            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("emerald_ore", "Emerald Creeper", 2, DEFAULT_COLOUR, -1, true, 20, 1, 4, false, 0, createSingleList("minecraft:emerald_ore", 1), defaultBiomes()));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("diamond_ore", "Diamond Creeper", 2, DEFAULT_COLOUR, -1,true, 5, 1, 4, false, 0, createSingleList("minecraft:diamond_ore", 1), defaultBiomes()));
+            CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("emerald_ore", "Emerald Creeper", 2, DEFAULT_COLOUR, -1, true, 5, 1, 4, false, 0, createSingleList("minecraft:emerald_ore", 1), defaultBiomes()));
 
             configData.generateDefaultTypes = false;
             configBuilder.save();

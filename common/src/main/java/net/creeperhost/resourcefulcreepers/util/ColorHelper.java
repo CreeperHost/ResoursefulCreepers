@@ -19,7 +19,7 @@ public class ColorHelper
         if(itemStack.isEmpty()) return null;
         BakedModel bakedModel = Minecraft.getInstance().getItemRenderer().getModel(itemStack, Minecraft.getInstance().level, Minecraft.getInstance().player, 16);
         TextureAtlasSprite textureAtlasSprite = bakedModel.getParticleIcon();
-        ResourceLocation particleLocation = new ResourceLocation(textureAtlasSprite.contents().name().getNamespace(), "textures/" + textureAtlasSprite.contents().name().getPath() + ".png");
+        ResourceLocation particleLocation = ResourceLocation.fromNamespaceAndPath(textureAtlasSprite.contents().name().getNamespace(), "textures/" + textureAtlasSprite.contents().name().getPath() + ".png");
         try
         {
             Resource resource = Minecraft.getInstance().getResourceManager().getResource(particleLocation).get();
@@ -60,6 +60,6 @@ public class ColorHelper
     {
         BakedModel bakedModel = Minecraft.getInstance().getItemRenderer().getModel(itemStack, null, null, 16);
         TextureAtlasSprite textureAtlasSprite = bakedModel.getParticleIcon();
-        return new ResourceLocation(textureAtlasSprite.contents().name().getNamespace(), "textures/" + textureAtlasSprite.contents().name().getPath() + ".png");
+        return ResourceLocation.fromNamespaceAndPath(textureAtlasSprite.contents().name().getNamespace(), "textures/" + textureAtlasSprite.contents().name().getPath() + ".png");
     }
 }

@@ -1,12 +1,10 @@
 package net.creeperhost.resourcefulcreepers.items;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
@@ -22,8 +20,8 @@ public class CreeperSpawnEgg extends SpawnEggItem {
     }
 
     @Override
-    public EntityType<?> getType(@Nullable CompoundTag tag) {
-        EntityType<?> type = super.getType(tag);
+    public EntityType<?> getType(ItemStack itemStack) {
+        EntityType<?> type = super.getType(itemStack);
         return type != null ? type : typeSupplier.get();
     }
 

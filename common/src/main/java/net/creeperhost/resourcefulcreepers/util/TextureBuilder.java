@@ -21,7 +21,7 @@ public class TextureBuilder
     {
         String resourceName = creeperType.getName();
         Path texture = Constants.TEXTURE_PATH.resolve(creeperType.getName() + ".png");
-        ResourceLocation newLocation = new ResourceLocation(Constants.MOD_ID, "/textures/entities/" + creeperType.getName());
+        ResourceLocation newLocation = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "/textures/entities/" + creeperType.getName());
         if (!texture.toFile().exists() && !creeperType.getItemDropsAsList().isEmpty())
         {
             ItemStack itemStack = creeperType.getItemDropsAsList().get(0);

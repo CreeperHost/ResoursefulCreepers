@@ -5,27 +5,30 @@ import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.data.CreeperTypeList;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
-import net.neoforged.api.distmarker.Dist;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.common.BiomeManager;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.event.entity.SpawnPlacementRegisterEvent;
 
 @Mod (Constants.MOD_ID)
 public class ResourcefulCreepersNeoForge {
-    public ResourcefulCreepersNeoForge() {
-        // Submit our event bus to let architectury register our content on the right time
-//        EventBuses.registerModEventBus(Constants.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
+    public ResourcefulCreepersNeoForge(IEventBus modBus) {
         ResourcefulCreepers.init();
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> NeoForgeClient::init);
+        modBus.addListener(this::registerSpawns);
 
-        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        eventBus.addListener(this::commonLoaded);
+        if (FMLEnvironment.dist.isClient()) {
+            NeoForgeClient.init(modBus);
+        }
     }
 
-    private void commonLoaded(final FMLCommonSetupEvent event) {
-        ModEntities.registerSpawns();
+    private void registerSpawns(SpawnPlacementRegisterEvent event) {
+        for (CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes) {
+            if (creeperType.allowNaturalSpawns()) {
+                ResourcefulCreepers.LOGGER.info("registering spawn for {}", creeperType.getDisplayName());
+                event.register(ModEntities.CREEPERS.get(creeperType).get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, level, spawnType, blockPos, randomSource) ->  ModEntities.checkMonsterSpawnRules(type, level, spawnType, blockPos, randomSource, creeperType), SpawnPlacementRegisterEvent.Operation.OR);
+            }
+        }
     }
 }

@@ -30,18 +30,13 @@ public class ResourcefulCreepersPlatform {
         throw new AssertionError();
     }
 
-    @ExpectPlatform
-    public static List<Tier> getTierList() {
-        throw new AssertionError();
-    }
-
-    @ExpectPlatform
-    public static boolean isCorrectTierForDrops(Tier tier, BlockState blockState) {
-        throw new AssertionError();
-    }
-
-    @ExpectPlatform
-    public static <T extends Animal> void addSpawn(Supplier<EntityType<T>> entityType, CreeperType creeperType) {
-        throw new AssertionError();
-    }
+//    @ExpectPlatform
+//    public static List<Tier> getTierList() {
+//        throw new AssertionError();
+//    }
+//
+//    @ExpectPlatform
+//    public static boolean isCorrectTierForDrops(Tier tier, BlockState blockState) {
+//        throw new AssertionError();
+//    }
 }

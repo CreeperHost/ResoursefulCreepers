@@ -59,12 +59,6 @@ public class ResourcefulCreeperModel<EntityResourcefulCreeper extends Entity> ex
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha)
-    {
-        super.renderToBuffer(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-
-    @Override
     protected Iterable<ModelPart> headParts()
     {
         return ImmutableList.of();

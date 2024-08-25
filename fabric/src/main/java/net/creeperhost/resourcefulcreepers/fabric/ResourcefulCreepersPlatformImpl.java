@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.ItemStack;
@@ -47,15 +48,5 @@ public class ResourcefulCreepersPlatformImpl {
     //TODO
     public static boolean isCorrectTierForDrops(Tier tier, BlockState blockState) {
         return false;
-    }
-
-    public static <T extends Animal> void addSpawn(Supplier<EntityType<T>> entityType, CreeperType creeperType) {
-        try {
-            List<TagKey<Biome>> tags = creeperType.getBiomesTags().stream().map(e -> TagKey.create(Registries.BIOME, new ResourceLocation(e))).toList();
-            BiomeModifications.addSpawn(e -> tags.stream().anyMatch(e::hasTag), MobCategory.MONSTER, entityType.get(), creeperType.getSpawnWeight(), creeperType.getMinGroup(), creeperType.getMaxGroup());
-            SpawnPlacements.register(entityType.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, serverLevelAccessor, mobSpawnType, blockPos, randomSource) -> ModEntities.checkMonsterSpawnRules(type, serverLevelAccessor, mobSpawnType, blockPos, randomSource, creeperType));
-        } catch (Exception e) {
-            ResourcefulCreepers.LOGGER.error("Failed to register creeper type: {}", creeperType.getName(), e);
-        }
     }
 }

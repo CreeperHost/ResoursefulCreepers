@@ -19,52 +19,52 @@ public class CreeperBuilder
     public static HashMap<ResourceLocation, OreGenData> ORE_DATA = new HashMap<>();
     public static int MAX_TIER = 0;
 
-    public static int generateFromOreTags()
-    {
-        generateOreData();
-        MAX_TIER = ResourcefulCreepersPlatform.getTierList().size();
-
-        //Clear out the old list
-        CreeperTypeList.INSTANCE.creeperTypes.clear();
-        List<Block> defaults = ResourcefulCreepersPlatform.getDefaults();
-        int amount = 0;
-        for (Block aDefault : defaults)
-        {
-            ResourceLocation name = BuiltInRegistries.BLOCK.getKey(aDefault);
-            ResourceLocation empty = new ResourceLocation("empty");
-            if(name == empty)
-            {
-                ResourcefulCreepers.LOGGER.error("Unable to find blocks resource location for " + name + " Skipping");
-                continue;
-            }
-            OreGenData oreGenData = ORE_DATA.get(name);
-            if(oreGenData == null)
-            {
-                ResourcefulCreepers.LOGGER.error("Unable to find oreData for " + name + " Skipping");
-                continue;
-            }
-            int tier = -1;
-            if(calculateTier(aDefault.defaultBlockState()) >= 0)
-            {
-                tier = calculateTier(aDefault.defaultBlockState());
-                if(tier > MAX_TIER) tier = MAX_TIER;
-            }
-            else
-            {
-                ResourcefulCreepers.LOGGER.error("Unable to find calculate tier for " + name + " Skipping");
-                continue;
-            }
-
-            CreeperType creeperType = new CreeperType(name.getPath(), aDefault.getName().getString(), tier, ResourcefulCreepers.DEFAULT_COLOUR,
-                    ColorHelper.getRandomColour(new ItemStack(aDefault)), true, oreGenData.getWeight(), 1,4, true,
-                    aDefault.defaultDestroyTime(), ResourcefulCreepers.createSingleList(name.toString(), 1), ResourcefulCreepers.defaultBiomes());
-
-            CreeperTypeList.INSTANCE.creeperTypes.add(creeperType);
-            amount++;
-        }
-        CreeperTypeList.updateFile();
-        return amount;
-    }
+//    public static int generateFromOreTags()
+//    {
+//        generateOreData();
+//        MAX_TIER = ResourcefulCreepersPlatform.getTierList().size();
+//
+//        //Clear out the old list
+//        CreeperTypeList.INSTANCE.creeperTypes.clear();
+//        List<Block> defaults = ResourcefulCreepersPlatform.getDefaults();
+//        int amount = 0;
+//        for (Block aDefault : defaults)
+//        {
+//            ResourceLocation name = BuiltInRegistries.BLOCK.getKey(aDefault);
+//            ResourceLocation empty = ResourceLocation.withDefaultNamespace("empty");
+//            if(name == empty)
+//            {
+//                ResourcefulCreepers.LOGGER.error("Unable to find blocks resource location for " + name + " Skipping");
+//                continue;
+//            }
+//            OreGenData oreGenData = ORE_DATA.get(name);
+//            if(oreGenData == null)
+//            {
+//                ResourcefulCreepers.LOGGER.error("Unable to find oreData for " + name + " Skipping");
+//                continue;
+//            }
+//            int tier = -1;
+//            if(calculateTier(aDefault.defaultBlockState()) >= 0)
+//            {
+//                tier = calculateTier(aDefault.defaultBlockState());
+//                if(tier > MAX_TIER) tier = MAX_TIER;
+//            }
+//            else
+//            {
+//                ResourcefulCreepers.LOGGER.error("Unable to find calculate tier for " + name + " Skipping");
+//                continue;
+//            }
+//
+//            CreeperType creeperType = new CreeperType(name.getPath(), aDefault.getName().getString(), tier, ResourcefulCreepers.DEFAULT_COLOUR,
+//                    ColorHelper.getRandomColour(new ItemStack(aDefault)), true, oreGenData.getWeight(), 1,4, true,
+//                    aDefault.defaultDestroyTime(), ResourcefulCreepers.createSingleList(name.toString(), 1), ResourcefulCreepers.defaultBiomes());
+//
+//            CreeperTypeList.INSTANCE.creeperTypes.add(creeperType);
+//            amount++;
+//        }
+//        CreeperTypeList.updateFile();
+//        return amount;
+//    }
 
     public static void generateOreData()
     {
@@ -122,16 +122,16 @@ public class CreeperBuilder
         });
     }
 
-    public static int calculateTier(BlockState blockState)
-    {
-        List<Tier> tierList = ResourcefulCreepersPlatform.getTierList();
-        for (Tier tier : tierList)
-        {
-            if(ResourcefulCreepersPlatform.isCorrectTierForDrops(tier, blockState))
-            {
-                return tier.getLevel();
-            }
-        }
-        return 0;
-    }
+//    public static int calculateTier(BlockState blockState)
+//    {
+//        List<Tier> tierList = ResourcefulCreepersPlatform.getTierList();
+//        for (Tier tier : tierList)
+//        {
+//            if(ResourcefulCreepersPlatform.isCorrectTierForDrops(tier, blockState))
+//            {
+//                return tier.getEnchantmentValue().getLevel();
+//            }
+//        }
+//        return 0;
+//    }
 }

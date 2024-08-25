@@ -6,11 +6,13 @@ import net.creeperhost.resourcefulcreepers.entites.goals.RcSwellGoal;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,6 +45,8 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,6 +62,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     private static final EntityDataAccessor<Boolean> DATA_IS_POWERED;
     private static final EntityDataAccessor<Boolean> DATA_IS_IGNITED;
     private static final EntityDataAccessor<Boolean> DATA_IS_TAMED;
+    private static final EntityDimensions BABY_DIMENSIONS;
 
     private int oldSwell;
     private int swell;
@@ -71,6 +76,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         DATA_IS_POWERED = SynchedEntityData.defineId(EntityResourcefulCreeper.class, EntityDataSerializers.BOOLEAN);
         DATA_IS_IGNITED = SynchedEntityData.defineId(EntityResourcefulCreeper.class, EntityDataSerializers.BOOLEAN);
         DATA_IS_TAMED = SynchedEntityData.defineId(EntityResourcefulCreeper.class, EntityDataSerializers.BOOLEAN);
+        BABY_DIMENSIONS = EntityType.CREEPER.getDimensions().scale(0.5F).withEyeHeight(0.93F);
     }
 
     public EntityResourcefulCreeper(EntityType<? extends Animal> entityType, Level level)
@@ -87,6 +93,11 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
                 this.creeperType = creeperType;
             }
         }
+    }
+
+    @Override
+    public void moveTo(double d, double e, double f, float g, float h) {
+        super.moveTo(d, e, f, g, h);
     }
 
     @Override
@@ -305,9 +316,9 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
     }
 
     @Override
-    public void dropCustomDeathLoot(@NotNull DamageSource damageSource, int i, boolean bl)
+    public void dropCustomDeathLoot(ServerLevel serverLevel, @NotNull DamageSource damageSource, boolean bl)
     {
-        super.dropCustomDeathLoot(damageSource, i, bl);
+        super.dropCustomDeathLoot(serverLevel, damageSource, bl);
 
         boolean autoMated = isAutomated(damageSource);
         int random = level().getRandom().nextInt(0, 100);
@@ -354,10 +365,8 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
 
     //Make our creepers drop Vanilla creepers loot
     @Override
-    public ResourceLocation getDefaultLootTable()
-    {
-        ResourceLocation resourcelocation = new ResourceLocation("minecraft:creeper");
-        return new ResourceLocation(resourcelocation.getNamespace(), "entities/" + resourcelocation.getPath());
+    protected ResourceKey<LootTable> getDefaultLootTable() {
+        return EntityType.CREEPER.getDefaultLootTable();
     }
 
     @Override
@@ -443,20 +452,20 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
         return list;
     }
 
+
+
     @Override
-    public float getStandingEyeHeight(Pose pose, EntityDimensions entityDimensions)
-    {
-        return this.isBaby() ? entityDimensions.height * 0.85F : 1.45F;
+    public EntityDimensions getDefaultDimensions(Pose pose) {
+        return this.isBaby() ? BABY_DIMENSIONS : super.getDefaultDimensions(pose);
     }
 
     @Override
-    public void defineSynchedData()
-    {
-        super.defineSynchedData();
-        this.entityData.define(DATA_SWELL_DIR, -1);
-        this.entityData.define(DATA_IS_POWERED, false);
-        this.entityData.define(DATA_IS_IGNITED, false);
-        this.entityData.define(DATA_IS_TAMED, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_SWELL_DIR, -1);
+        builder.define(DATA_IS_POWERED, false);
+        builder.define(DATA_IS_IGNITED, false);
+        builder.define(DATA_IS_TAMED, false);
     }
 
     @Override
@@ -559,7 +568,7 @@ public class EntityResourcefulCreeper extends Animal implements PowerableMob
                 if (!itemStack.isDamageableItem()) {
                     itemStack.shrink(1);
                 } else {
-                    itemStack.hurtAndBreak(1, player, (playerx) -> playerx.broadcastBreakEvent(interactionHand));
+                    itemStack.hurtAndBreak(1, player, getSlotForHand(interactionHand));
                 }
             }
 

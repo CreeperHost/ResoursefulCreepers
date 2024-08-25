@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ResourcefulCreeperPowerLayer extends EnergySwirlLayer<EntityResourcefulCreeper, ResourcefulCreeperModel<EntityResourcefulCreeper>>
 {
-    private static final ResourceLocation POWER_LOCATION = new ResourceLocation("textures/entity/creeper/creeper_armor.png");
+    private static final ResourceLocation POWER_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/creeper/creeper_armor.png");
     private final ResourcefulCreeperModel<EntityResourcefulCreeper> model;
 
     public ResourcefulCreeperPowerLayer(RenderLayerParent<EntityResourcefulCreeper, ResourcefulCreeperModel<EntityResourcefulCreeper>> renderLayerParent, EntityModelSet modelSet)

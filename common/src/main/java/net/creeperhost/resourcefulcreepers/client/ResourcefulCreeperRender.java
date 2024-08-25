@@ -13,7 +13,7 @@ import net.minecraft.util.Mth;
 
 public class ResourcefulCreeperRender extends MobRenderer<EntityResourcefulCreeper, ResourcefulCreeperModel<EntityResourcefulCreeper>> implements RenderLayerParent<EntityResourcefulCreeper, ResourcefulCreeperModel<EntityResourcefulCreeper>>
 {
-    public static final ResourceLocation CREEPER_LOCATION = new ResourceLocation("textures/entity/creeper/creeper.png");
+    public static final ResourceLocation CREEPER_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/creeper/creeper.png");
 
     public ResourcefulCreeperRender(EntityRendererProvider.Context context)
     {
@@ -46,7 +46,7 @@ public class ResourcefulCreeperRender extends MobRenderer<EntityResourcefulCreep
     {
        String resourceName = entity.getCreeperType().getName();
        if (ResourcefulCreeperClient.getTexture(resourceName) == null) return CREEPER_LOCATION;
-       return new ResourceLocation(Constants.MOD_ID, "/textures/entities/" + entity.getCreeperType().getName());
+       return ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "/textures/entities/" + entity.getCreeperType().getName());
     }
 
     @Override

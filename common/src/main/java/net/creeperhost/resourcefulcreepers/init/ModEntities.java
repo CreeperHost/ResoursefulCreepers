@@ -24,6 +24,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -71,17 +72,10 @@ public class ModEntities {
 
     public static boolean checkMonsterSpawnRules(EntityType<?> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource, CreeperType creeperType) {
         if (levelAccessor.getDifficulty() == Difficulty.PEACEFUL) return false;
-        if (!levelAccessor.getBlockState(blockPos.below()).isValidSpawn(levelAccessor, blockPos.below(), entityType)) return false;
-        return !Monster.isDarkEnoughToSpawn(levelAccessor, blockPos, randomSource);
-    }
-
-    public static void registerSpawns() {
-        for (CreeperType creeperType : CreeperTypeList.INSTANCE.creeperTypes) {
-            if (creeperType.allowNaturalSpawns()) {
-                ResourcefulCreepers.LOGGER.info("registering spawn for {}", creeperType.getDisplayName());;
-                ResourcefulCreepersPlatform.addSpawn(() -> CREEPERS.get(creeperType).get(), creeperType);
-            }
-        }
+        BlockPos belowPos = blockPos.below();
+        if (!levelAccessor.getBlockState(belowPos).isValidSpawn(levelAccessor, belowPos, entityType)) return false;
+        if (!levelAccessor.getBiome(blockPos).is(BiomeTags.IS_OVERWORLD)) return true;
+        return Monster.isDarkEnoughToSpawn(levelAccessor, blockPos, randomSource);
     }
 
     static {
