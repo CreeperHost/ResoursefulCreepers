@@ -30,6 +30,11 @@ public class ResourcefulCreepersPlatform {
         throw new AssertionError();
     }
 
+    @ExpectPlatform
+    public static boolean isOre(BlockState state) {
+        throw new AssertionError();
+    }
+
 //    @ExpectPlatform
 //    public static List<Tier> getTierList() {
 //        throw new AssertionError();

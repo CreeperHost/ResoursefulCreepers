@@ -1,5 +1,6 @@
 package net.creeperhost.resourcefulcreepers.fabric;
 
+import net.creeperhost.resourcefulcreepers.CreeperBuilder;
 import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
 import net.creeperhost.resourcefulcreepers.ResourcefulCreepersPlatform;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
@@ -7,6 +8,7 @@ import net.creeperhost.resourcefulcreepers.data.CreeperTypeList;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -35,6 +37,8 @@ public class ResourcefulCreepersFabric implements ModInitializer
                 addSpawn(() -> ModEntities.CREEPERS.get(creeperType).get(), creeperType);
             }
         }
+
+        ServerLifecycleEvents.SERVER_STARTED.register(CreeperBuilder::onServerStarted);
     }
 
     public static <T extends Animal> void addSpawn(Supplier<EntityType<T>> entityType, CreeperType creeperType) {

@@ -54,6 +54,10 @@ public class ResourcefulCreepersPlatformImpl
         return 0;
     }
 
+    public static boolean isOre(BlockState state) {
+        return state.is(Tags.Blocks.ORES);
+    }
+
 //    public static List<Tier> getTierList()
 //    {
 //        return TierSortingRegistry.getSortedTiers();

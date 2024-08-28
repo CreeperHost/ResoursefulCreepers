@@ -4,6 +4,10 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.7.11",
   "mixins": [
+    "MixinCountPlacement",
+    "MixinHeightRangePlacement",
+    "MixinTrapezoidHeight",
+    "MixinUniformHeight"
   ],
   "client": [
     "MixinModelLoader"

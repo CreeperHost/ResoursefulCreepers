@@ -4,6 +4,7 @@ import net.creeperhost.resourcefulcreepers.ResourcefulCreepers;
 import net.creeperhost.resourcefulcreepers.data.CreeperType;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -40,13 +41,17 @@ public class ResourcefulCreepersPlatformImpl {
         return Collections.EMPTY_LIST;
     }
 
-    //TODO
-    public static List<Tier> getTierList() {
-        return Collections.EMPTY_LIST;
+    public static boolean isOre(BlockState state) {
+        return state.is(ConventionalBlockTags.ORES);
     }
 
-    //TODO
-    public static boolean isCorrectTierForDrops(Tier tier, BlockState blockState) {
-        return false;
-    }
+//    //TODO
+//    public static List<Tier> getTierList() {
+//        return Collections.EMPTY_LIST;
+//    }
+//
+//    //TODO
+//    public static boolean isCorrectTierForDrops(Tier tier, BlockState blockState) {
+//        return false;
+//    }
 }

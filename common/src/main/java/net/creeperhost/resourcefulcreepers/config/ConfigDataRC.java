@@ -7,8 +7,8 @@ public class ConfigDataRC extends ConfigData
 {
     @Comment("Generate default Creepers")
     public boolean generateDefaultTypes = true;
-//    @Comment("Generate Creepers using the ORES tag")
-//    public boolean autoGenerateCreeperTypesFromOreTags = false;
+    @Comment("Generate Creepers using the ORES tag")
+    public boolean autoGenerateCreeperTypesFromOreTags = false;
     @Comment("Explosion size multiplier, Used to increase the range of the Creepers explosion")
     public float explosionMultiplier = 0.25F;
     @Comment("Explosion size multiplier for Powered Creepers, Used to increase the range of the Creepers explosion")

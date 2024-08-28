@@ -18,6 +18,7 @@ import net.creeperhost.resourcefulcreepers.data.ItemDrop;
 import net.creeperhost.resourcefulcreepers.init.ModEntities;
 import net.creeperhost.resourcefulcreepers.util.TextureBuilder;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -91,12 +92,12 @@ public class ResourcefulCreepers
         try
         {
             //TODO Figure out creeper generation based on ores
-//            if (!configData.generateDefaultTypes && !Constants.CREEPER_TYPES_CONFIG.toFile().exists())
-//            {
-//                LOGGER.info("creeper_types.json does not exist, Creating new file using the ores tag");
-//                configData.autoGenerateCreeperTypesFromOreTags = true;
-//                configBuilder.save();
-//            }
+            if (!configData.generateDefaultTypes && !Constants.CREEPER_TYPES_CONFIG.toFile().exists())
+            {
+                LOGGER.info("creeper_types.json does not exist, Creating new file using the ores tag");
+                configData.autoGenerateCreeperTypesFromOreTags = true;
+                ResourcefulCreepers.configBuilder.save(ResourcefulCreepers.configData);
+            }
             CreeperTypeList.init(Constants.CREEPER_TYPES_CONFIG.toFile());
             List<String> names = new ArrayList<>();
             List<CreeperType> dupes = new ArrayList<>();
@@ -129,6 +130,7 @@ public class ResourcefulCreepers
             generateDefaultTypes();
             ModEntities.ENTITIES.register();
             ModEntities.ITEMS.register();
+
             if (Platform.getEnvironment() == Env.CLIENT)
             {
                 ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(world ->
@@ -141,6 +143,7 @@ public class ResourcefulCreepers
 //                        configBuilder.save();
 //                        LOGGER.info("Finished creating new CreeperTypes, " + amount + " types have been created, A restart is needed for these changes to take effect");
 //                    }
+
 
                     if (CreeperTypeList.INSTANCE.creeperTypes != null && !CreeperTypeList.INSTANCE.creeperTypes.isEmpty())
                     {
@@ -184,7 +187,7 @@ public class ResourcefulCreepers
             CreeperTypeList.INSTANCE.creeperTypes.add(new CreeperType("emerald_ore", "Emerald Creeper", 2, DEFAULT_COLOUR, -1, true, 5, 1, 4, false, 0, createSingleList("minecraft:emerald_ore", 1), defaultBiomes()));
 
             configData.generateDefaultTypes = false;
-            configBuilder.save();
+            configBuilder.save(configData);
             CreeperTypeList.updateFile();
         }
 //        generateDataJsons();
